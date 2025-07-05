@@ -1,0 +1,79 @@
+{% extends "blank.html" %}
+{% load get_item %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Order</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inventory data from Django context
+            const inventory = {{ inventory|safe }};
+            // Add event listeners to all quantity inputs
+            document.querySelectorAll('input[type="number"][name^="quantity_"]').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    const productId = this.name.split('_')[1];
+                    const maxQty = inventory[productId] || 0;
+                    if (parseInt(this.value) > maxQty) {
+                        alert('Selected quantity exceeds available inventory (' + maxQty + ').');
+                        this.value = maxQty;
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-xl shadow w-full max-w-4xl flex">
+        <!-- Sidebar with products -->
+        <div class="w-1/2 pr-8 border-r">
+            <h2 class="text-lg font-bold mb-4">Add Products in Order</h2>
+            <form id="orderForm" method="post">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    {% for product in products %}
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-medium">{{ product.name }}</span>
+                            <span class="text-xs text-gray-500">({{ product.get_unit_type_display }})</span>
+                            <span class="text-xs text-green-600 ml-2">Available: {{ inventory|get_item:product.id|default:0 }}</span>
+                        </div>
+                        <input type="number" name="quantity_{{ product.id }}" min="0" value="0" class="w-20 px-2 py-1 border rounded" placeholder="Qty">
+                    </div>
+                    {% endfor %}
+                </div>
+        </div>
+        <!-- Order details -->
+        <div class="w-1/2 pl-8">
+            <h2 class="text-lg font-bold mb-4">Order Details</h2>
+            <div class="mb-4">
+                <label class="block mb-1 text-sm font-medium text-gray-700">Supplier</label>
+                <select name="supplier" class="w-full px-3 py-2 border rounded" required>
+                    <option value="">Select Supplier</option>
+                    {% for supplier in suppliers %}
+                    <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-1 text-sm font-medium text-gray-700">Status</label>
+                <select name="status" class="w-full px-3 py-2 border rounded">
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block mb-1 text-sm font-medium text-gray-700">Order Date</label>
+                <input type="date" name="order_date" class="w-full px-3 py-2 border rounded" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Place Order</button>
+            </form>
+            <a href="{% url 'order_list' %}" class="block mt-4 text-sm text-center text-blue-600 hover:underline">← Back to Orders</a>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

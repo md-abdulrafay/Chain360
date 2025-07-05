@@ -1,0 +1,53 @@
+{% extends "blank.html" %} {% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Suppliers</title>
+  </head>
+  <body class="bg-gray-100 p-10">
+    <div class="max-w-5xl mx-auto bg-white shadow rounded p-6">
+      <h1 class="text-2xl font-bold mb-4">Suppliers</h1>
+      <a
+        href="{% url 'add_supplier' %}"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        + Add Supplier
+      </a>
+      <table class="table-auto w-full mt-6 border">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="px-4 py-2">Name</th>
+            <th class="px-4 py-2">Contact</th>
+            <th class="px-4 py-2">Phone</th>
+            <th class="px-4 py-2">Email</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for supplier in suppliers %}
+          <tr class="border-t">
+            <td class="px-4 py-2">{{ supplier.name }}</td>
+            <td class="px-4 py-2">{{ supplier.contact_person }}</td>
+            <td class="px-4 py-2">{{ supplier.phone }}</td>
+            <td class="px-4 py-2">{{ supplier.email }}</td>
+            <td class="px-4 py-2">
+              <a
+                href="{% url 'edit_supplier' supplier.pk %}"
+                class="text-blue-600 hover:underline"
+                >Edit</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="text-center py-4 text-gray-500">
+              No suppliers yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
+{% endblock %}

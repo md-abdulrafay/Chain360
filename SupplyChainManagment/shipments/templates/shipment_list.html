@@ -1,0 +1,57 @@
+{% extends 'blank.html' %} {% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Shipment List</title>
+  </head>
+  <body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
+      <h1 class="text-2xl font-bold mb-6">All Shipments</h1>
+      <a
+        href="{% url 'add_shipment' %}"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >+ Add Shipment</a
+      >
+
+      <table class="table-auto w-full mt-6 border">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Tracking #</th>
+            <th class="px-4 py-2">Order</th>
+            <th class="px-4 py-2">Carrier</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Dispatch</th>
+            <th class="px-4 py-2">Delivery</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for shipment in shipments %}
+          <tr class="border-t">
+            <td class="px-4 py-2">{{ shipment.tracking_number }}</td>
+            <td class="px-4 py-2">{{ shipment.order }}</td>
+            <td class="px-4 py-2">{{ shipment.carrier }}</td>
+            <td class="px-4 py-2">{{ shipment.status|title }}</td>
+            <td class="px-4 py-2">{{ shipment.dispatch_date }}</td>
+            <td class="px-4 py-2">{{ shipment.delivery_date }}</td>
+            <td class="px-4 py-2">
+              <a
+                href="{% url 'edit_shipment' shipment.pk %}"
+                class="text-blue-600 hover:underline"
+                >Edit</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center text-gray-500 py-4">
+              No shipments yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
+{% endblock %}

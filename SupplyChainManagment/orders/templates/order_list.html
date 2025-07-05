@@ -1,0 +1,62 @@
+{% extends "blank.html" %} {% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Orders</title>
+  </head>
+  <body class="bg-gray-100 p-10">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
+      <h1 class="text-2xl font-bold mb-6">All Orders</h1>
+      <a
+        href="{% url 'add_order' %}"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >+ Add Order</a
+      >
+      <table class="table-auto w-full mt-6 border">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Order ID</th>
+            <th class="px-4 py-2">Supplier</th>
+            <th class="px-4 py-2">Products</th>
+            <th class="px-4 py-2">Date</th>
+            <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr class="border-t">
+            <td class="px-4 py-2">{{ order.id }}</td>
+            <td class="px-4 py-2">{{ order.supplier.name }}</td>
+            <td class="px-4 py-2">
+              <ul>
+                {% for item in order.items.all|slice:":1" %}
+                <li>{{ item.product.name }} ({{ item.quantity }})</li>
+                {% endfor %} {% if order.items.count > 1 %}
+                <li>+ {{ order.items.count|add:"-1" }} more</li>
+                {% endif %}
+              </ul>
+            </td>
+            <td class="px-4 py-2">{{ order.order_date|date:"Y-m-d" }}</td>
+            <td class="px-4 py-2">{{ order.status|title }}</td>
+            <td class="px-4 py-2">
+              <a
+                href="{% url 'edit_order' order.pk %}"
+                class="text-blue-600 hover:underline"
+                >Edit</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-4 text-gray-500">
+              No orders yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
+{% endblock %}

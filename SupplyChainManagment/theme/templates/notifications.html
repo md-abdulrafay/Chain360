@@ -1,0 +1,28 @@
+{% extends 'blank.html' %}
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-8 rounded-xl shadow w-full max-w-4xl">
+    <h1 class="text-2xl font-bold mb-6 text-left">Notifications</h1>
+    <div class="divide-y">
+      {% if notifications %}
+        {% for n in notifications %}
+        <a class="flex items-center justify-between px-4 py-4 capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out" href="{% if n.order_id %}/orders/{{ n.order_id }}/{% else %}#{% endif %}">
+          <div class="flex items-center">
+            <div class="px-3 py-2 rounded mr-4 bg-gray-100 border border-gray-300">
+              <i class="fad {{ n.icon }} text-sm"></i>
+            </div>
+            <div>
+              <div class="font-semibold text-left">{{ n.title }}</div>
+              <div class="text-xs text-gray-500 text-left">{{ n.text }}</div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400 ml-4 whitespace-nowrap">{{ n.time }}</div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <p class="text-left">No notifications found.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+<!-- invoice_detail_pdf.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoice PDF</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f4f6fa;
+        color: #222;
+        margin: 0;
+        padding: 0;
+      }
+      .invoice-box {
+        background: #fff;
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 40px 40px 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(44, 62, 80, 0.12);
+        border: 1px solid #e0e6ed;
+      }
+      .header {
+        border-bottom: 2px solid #4f8cff;
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+        text-align: left;
+      }
+      .header h1 {
+        color: #4f8cff;
+        margin: 0 0 8px 0;
+        font-size: 2.2em;
+        letter-spacing: 2px;
+      }
+      .header .meta {
+        font-size: 1em;
+        color: #888;
+      }
+      .info {
+        margin-bottom: 24px;
+      }
+      .info strong {
+        color: #4f8cff;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+      .table th {
+        background: #4f8cff;
+        color: #fff;
+        padding: 10px 8px;
+        font-weight: 600;
+        border: none;
+      }
+      .table td {
+        background: #f9fbfd;
+        padding: 8px;
+        border-bottom: 1px solid #e0e6ed;
+      }
+      .table tr:last-child td {
+        border-bottom: none;
+      }
+      .summary {
+        margin-top: 30px;
+        padding: 18px;
+        background: #f4f8ff;
+        border-radius: 8px;
+        border: 1px solid #e0e6ed;
+        width: 60%;
+        float: right;
+      }
+      .summary p {
+        margin: 0 0 8px 0;
+        font-size: 1.1em;
+      }
+      .summary p strong {
+        color: #4f8cff;
+      }
+      .footer {
+        clear: both;
+        text-align: center;
+        color: #aaa;
+        font-size: 0.95em;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="invoice-box">
+      <div class="header">
+        <h1>INVOICE</h1>
+        <div class="meta">
+          <span>Invoice #: <strong>{{ invoice.invoice_number }}</strong></span
+          ><br />
+          <span>Date: <strong>{{ invoice.invoice_date }}</strong></span
+          ><br />
+          <span>Due: <strong>{{ invoice.due_date }}</strong></span>
+        </div>
+      </div>
+      <div class="info">
+        <p><strong>Supplier:</strong> {{ supplier.name }}</p>
+        <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+        <p><strong>Status:</strong> {{ invoice.payment_status|capfirst }}</p>
+      </div>
+      <h4 style="color: #4f8cff; margin-bottom: 8px">Items</h4>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in products %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="summary">
+        <p><strong>Tax:</strong> Rs. {{ tax }}</p>
+        <p><strong>Delivery:</strong> Rs. {{ delivery }}</p>
+        <p><strong>Total Amount:</strong> Rs. {{ invoice.amount }}</p>
+      </div>
+      <div class="footer">
+        <p>Thank you for your business!</p>
+      </div>
+    </div>
+  </body>
+</html>

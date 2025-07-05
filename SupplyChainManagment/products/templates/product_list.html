@@ -1,0 +1,55 @@
+{% extends "blank.html" %} {% block content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Products</title>
+  </head>
+  <body class="bg-gray-100 p-10">
+    <div class="max-w-5xl mx-auto bg-white shadow rounded p-6">
+      <h1 class="text-2xl font-bold mb-4">All Products</h1>
+      <a
+        href="{% url 'add_product' %}"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        + Add Product
+      </a>
+      <table class="table-auto w-full mt-6 border">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="px-4 py-2">Name</th>
+            <th class="px-4 py-2">Category</th>
+            <th class="px-4 py-2">SKU</th>
+            <th class="px-4 py-2">Unit</th>
+            <th class="px-4 py-2">Price</th>
+            <th class="px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+          <tr class="border-t">
+            <td class="px-4 py-2">{{ product.name }}</td>
+            <td class="px-4 py-2">{{ product.category }}</td>
+            <td class="px-4 py-2">{{ product.sku }}</td>
+            <td class="px-4 py-2">{{ product.get_unit_type_display }}</td>
+            <td class="px-4 py-2">Rs. {{ product.price }}</td>
+            <td class="px-4 py-2">
+              <a
+                href="{% url 'edit_product' product.pk %}"
+                class="text-blue-600 hover:underline"
+                >Edit</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="text-center py-4 text-gray-500">
+              No products available.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
+{% endblock %}

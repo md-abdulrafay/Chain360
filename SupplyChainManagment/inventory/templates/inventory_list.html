@@ -1,0 +1,44 @@
+{% extends 'blank.html' %} {% block content %}
+<div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
+  <h2 class="text-2xl font-bold mb-6">Inventory</h2>
+  <a
+    href="{% url 'inventory:add' %}"
+    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-6 inline-block"
+    >+ Add Item</a
+  >
+  <table class="table-auto w-full mt-6 border">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="px-4 py-2">Item</th>
+        <th class="px-4 py-2">Quantity</th>
+        <th class="px-4 py-2">Unit</th>
+        <th class="px-4 py-2">Location</th>
+        <th class="px-4 py-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr class="border-t">
+        <td class="px-4 py-2">{{ item.product }}</td>
+        <td class="px-4 py-2">{{ item.quantity }}</td>
+        <td class="px-4 py-2">{{ item.get_unit_display }}</td>
+        <td class="px-4 py-2">{{ item.location }}</td>
+        <td class="px-4 py-2">
+          <a
+            href="{% url 'inventory:edit' item.pk %}"
+            class="text-blue-600 hover:underline"
+            >Edit</a
+          >
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center py-4 text-gray-500">
+          No inventory items yet.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
