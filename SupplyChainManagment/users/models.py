@@ -1,13 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
+from django import forms
 
 # Create your models here.
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ('admin', 'Admin'),
-        ('manager', 'Manager'),
         ('staff', 'Staff'),
         ('supplier', 'Supplier'),
     )
@@ -15,4 +15,6 @@ class CustomUser(AbstractUser):
     
     def __str__(self):
         return f"{self.username} ({self.role})"
+
+
 

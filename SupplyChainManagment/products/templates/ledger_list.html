@@ -1,0 +1,49 @@
+{% extends 'blank.html' %} {% load static %} {% block content %}
+<div class="container mx-auto px-4 py-6">
+  <h2 class="text-2xl font-semibold mb-4">Product Ledger</h2>
+  <a
+    href="{% url 'add_ledger_entry' %}"
+    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-4 inline-block"
+    >Add Ledger Entry</a
+  >
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white border rounded shadow">
+      <thead class="bg-gray-100 text-left">
+        <tr>
+          <th class="py-2 px-4 border-b">Product</th>
+          <th class="py-2 px-4 border-b">Transaction Type</th>
+          <th class="py-2 px-4 border-b">Quantity</th>
+          <th class="py-2 px-4 border-b">Unit Price</th>
+          <th class="py-2 px-4 border-b">Total Price</th>
+          <th class="py-2 px-4 border-b">Remarks</th>
+          <th class="py-2 px-4 border-b">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in entries %}
+        <tr class="hover:bg-gray-50">
+          <td class="py-2 px-4 border-b">{{ entry.product.name }}</td>
+          <td class="py-2 px-4 border-b">
+            {{ entry.get_transaction_type_display }}
+          </td>
+          <td class="py-2 px-4 border-b">{{ entry.quantity }}</td>
+          <td class="py-2 px-4 border-b">{{ entry.unit_price }}</td>
+          <td class="py-2 px-4 border-b">{{ entry.total_price }}</td>
+          <td class="py-2 px-4 border-b">{{ entry.remarks }}</td>
+          <td class="py-2 px-4 border-b">
+            {{ entry.created_at|date:"Y-m-d H:i" }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="py-4 text-center text-gray-500">
+            No ledger entries found.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

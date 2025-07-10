@@ -1,6 +1,7 @@
 from django import forms
 from .models import Shipment
 from orders.models import Order
+from django.db.models import Q
 
 class ShipmentForm(forms.ModelForm):
     class Meta:
@@ -18,16 +19,24 @@ class ShipmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Only show orders with approved, shipped, or delivered status AND no shipment yet
         from shipments.models import Shipment
         shipped_orders = Shipment.objects.values_list('order_id', flat=True)
-        self.fields['order'].queryset = Order.objects.filter(
-            status__in=['approved', 'shipped', 'delivered']
-        ).exclude(id__in=shipped_orders)
+        # If editing, include the current order in the queryset
+        instance = kwargs.get('instance', None)
+        if instance and instance.order_id:
+            self.fields['order'].queryset = Order.objects.filter(
+                status__in=['approved', 'shipped', 'delivered', 'dispatched']
+            ).filter(
+                Q(id=instance.order_id) | ~Q(id__in=shipped_orders)
+            )
+        else:
+            self.fields['order'].queryset = Order.objects.filter(
+                status__in=['approved', 'shipped', 'delivered', 'dispatched']
+            ).exclude(id__in=shipped_orders)
 
     def clean(self):
         cleaned_data = super().clean()
         order = cleaned_data.get("order")
 
-        if order and order.status not in ['approved', 'shipped', 'delivered']:
+        if order and order.status not in ['approved', 'shipped', 'delivered','dispatched']:
             raise forms.ValidationError("You can only create a shipment for orders that are Approved, Shipped, or Delivered.")

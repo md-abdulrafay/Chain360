@@ -18,53 +18,35 @@ for (let i = 0; i < alert_button.length; i++) {
 var dropdown = document.getElementsByClassName('dropdown');
 
 if (dropdown.length >= 1) {
-    
     for (let i = 0; i < dropdown.length; i++) {
         const item = dropdown[i];
-
-        var menu,btn,overflow;
-        
-        item.addEventListener('click' , function(){            
-
-            for (let i = 0; i < this.children.length; i++) {
-                const e = this.children[i];
-
-                if (e.classList.contains('menu')) {
-                    menu = e;                  
-                }else if (e.classList.contains('menu-btn')) {
-                    btn = e;
-                }else if (e.classList.contains('menu-overflow')) {
-                    overflow = e;
+        var menu = item.querySelector('.menu');
+        var btn = item.querySelector('.menu-btn');
+        var overflow = item.querySelector('.menu-overflow');
+        if (btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent bubbling
+                if (menu && overflow) {
+                    if (menu.classList.contains('hidden')) {
+                        menu.classList.remove('hidden');
+                        menu.classList.add('fadeIn');
+                        overflow.classList.remove('hidden');
+                    } else {
+                        menu.classList.add('hidden');
+                        overflow.classList.add('hidden');
+                        menu.classList.remove('fadeIn');
+                    }
                 }
-                              
+            });
+        }
+        // Optional: close dropdown if clicking outside
+        document.addEventListener('click', function(e) {
+            if (menu && overflow && !item.contains(e.target)) {
+                menu.classList.add('hidden');
+                overflow.classList.add('hidden');
+                menu.classList.remove('fadeIn');
             }
-            
-            if (menu.classList.contains('hidden')) {
-                // show the menu
-                showMenu();
-            }else{
-                // hide the menu
-                hideMenu()
-            }      
-
-
-        });        
-        
-
-        var showMenu = function(){
-            menu.classList.remove('hidden');
-            menu.classList.add('fadeIn');
-            overflow.classList.remove('hidden');            
-        };
-
-        var hideMenu = function(){
-            menu.classList.add('hidden');
-            overflow.classList.add('hidden');            
-            menu.classList.remove('fadeIn');            
-        };
-        
-                
-        
+        });
     }    
     
 };
@@ -198,3 +180,41 @@ var btn     = document.getElementById('sliderBtn'),
     }
 })();
 // --- END ANALYTICS_1 CHARTS ---
+
+// --- Improved dropdown logic: only open on button click, close on outside click ---
+(function() {
+    var dropdowns = document.querySelectorAll('.dropdown');
+    dropdowns.forEach(function(dropdown) {
+        var btn = dropdown.querySelector('.menu-btn');
+        var menu = dropdown.querySelector('.menu');
+        var overflow = dropdown.querySelector('.menu-overflow');
+        if (!btn || !menu || !overflow) return;
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // Hide all other dropdowns
+            document.querySelectorAll('.menu').forEach(function(m) {
+                if (m !== menu) m.classList.add('hidden');
+            });
+            document.querySelectorAll('.menu-overflow').forEach(function(o) {
+                if (o !== overflow) o.classList.add('hidden');
+            });
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('fadeIn');
+            overflow.classList.toggle('hidden');
+        });
+        overflow.addEventListener('click', function(e) {
+            menu.classList.add('hidden');
+            menu.classList.remove('fadeIn');
+            overflow.classList.add('hidden');
+        });
+        // Close dropdown if clicking outside
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target)) {
+                menu.classList.add('hidden');
+                menu.classList.remove('fadeIn');
+                overflow.classList.add('hidden');
+            }
+        });
+    });
+})();
+// --- END Improved dropdown logic ---

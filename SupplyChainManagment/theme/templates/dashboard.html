@@ -102,7 +102,7 @@
                 <h1
                   class="text-sm text-gray-800 font-semibold m-0 p-0 leading-none"
                 >
-                  moeSaid
+                  {{ user_name }}
                 </h1>
                 <i class="fad fa-chevron-down ml-2 text-xs leading-none"></i>
               </div>
@@ -118,7 +118,7 @@
               <!-- item -->
               <a
                 class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
+                href="/users/edit-profile/"
               >
                 <i class="fad fa-user-edit text-xs mr-1"></i>
                 edit my profile
@@ -160,7 +160,7 @@
               <!-- item -->
               <a
                 class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
+                href="/users/logout/"
               >
                 <i class="fad fa-user-times text-xs mr-1"></i>
                 log out
@@ -598,10 +598,15 @@
                 <div class="flex flex-row justify-between items-center">
                   <div class="h6 text-indigo-700 fad fa-shopping-cart"></div>
                   <span
-                    class="rounded-full text-white badge bg-teal-400 text-xs"
+                    class="rounded-full text-white badge text-xs {% if percent_sales_vs_yesterday > 0 %}bg-blue-500{% else %}bg-red-500{% endif %}"
+                    title="more sales than yesterday"
                   >
-                    12%
-                    <i class="fal fa-chevron-up ml-1"></i>
+                    {{ percent_sales_vs_yesterday|floatformat:0 }}% 
+                    {% if percent_sales_vs_yesterday > 0 %}
+                      <i class="fal fa-chevron-up ml-1"></i>
+                    {% else %}
+                      <i class="fal fa-chevron-down ml-1"></i>
+                    {% endif %}
                   </span>
                 </div>
                 <!-- end top -->
@@ -630,10 +635,15 @@
                 <div class="flex flex-row justify-between items-center">
                   <div class="h6 text-red-700 fad fa-store"></div>
                   <span
-                    class="rounded-full text-white badge bg-red-400 text-xs"
+                    class="rounded-full text-white badge text-xs {% if percent_orders_vs_yesterday > 0 %}bg-blue-500{% else %}bg-red-500{% endif %}"
+                    title="more orders than yesterday"
                   >
-                    6%
-                    <i class="fal fa-chevron-down ml-1"></i>
+                    {{ percent_orders_vs_yesterday|floatformat:0 }}% 
+                    {% if percent_orders_vs_yesterday > 0 %}
+                      <i class="fal fa-chevron-up ml-1"></i>
+                    {% else %}
+                      <i class="fal fa-chevron-down ml-1"></i>
+                    {% endif %}
                   </span>
                 </div>
                 <!-- end top -->
@@ -660,10 +670,15 @@
                 <div class="flex flex-row justify-between items-center">
                   <div class="h6 text-yellow-600 fad fa-sitemap"></div>
                   <span
-                    class="rounded-full text-white badge bg-teal-400 text-xs"
+                    class="rounded-full text-white badge text-xs {% if percent_products_vs_yesterday > 0 %}bg-blue-500{% else %}bg-red-500{% endif %}"
+                    title="more products than yesterday"
                   >
-                    72%
-                    <i class="fal fa-chevron-up ml-1"></i>
+                    {{ percent_products_vs_yesterday|floatformat:0 }}% 
+                    {% if percent_products_vs_yesterday > 0 %}
+                      <i class="fal fa-chevron-up ml-1"></i>
+                    {% else %}
+                      <i class="fal fa-chevron-down ml-1"></i>
+                    {% endif %}
                   </span>
                 </div>
                 <!-- end top -->
@@ -692,10 +707,15 @@
                 <div class="flex flex-row justify-between items-center">
                   <div class="h6 text-green-700 fad fa-users"></div>
                   <span
-                    class="rounded-full text-white badge bg-teal-400 text-xs"
+                    class="rounded-full text-white badge text-xs {% if percent_fulfillment_rate_vs_yesterday > 0 %}bg-blue-500{% else %}bg-red-500{% endif %}"
+                    title="fulfillment rate change vs yesterday"
                   >
-                    150%
+                    {{ percent_fulfillment_rate_vs_yesterday|floatformat:0 }}%
+                    {% if percent_fulfillment_rate_vs_yesterday > 0 %}
                     <i class="fal fa-chevron-up ml-1"></i>
+                    {% else %}
+                    <i class="fal fa-chevron-down ml-1"></i>
+                    {% endif %}
                   </span>
                 </div>
                 <!-- end top -->
@@ -733,23 +753,15 @@
 
               <!-- info -->
               <div class="py-2 ml-10">
-                <h1 class="h6">Good Job, Mohamed!</h1>
-                <p class="text-white text-xs">
-                  You've finished all of your tasks for this week.
-                </p>
+                <h1 class="h6">Good Job, {{ user_name }}!</h1>
+                <p class="text-white text-xs"></p>
 
                 <ul class="mt-4">
+                  {% for task in tasks_this_week %}
                   <li class="text-sm font-light">
-                    <i class="fad fa-check-double mr-2 mb-2"></i> Finish
-                    Dashboard Design
+                    <i class="fad fa-check-double mr-2 mb-2"></i> {{ task }}
                   </li>
-                  <li class="text-sm font-light">
-                    <i class="fad fa-check-double mr-2 mb-2"></i> Fix Issue #74
-                  </li>
-                  <li class="text-sm font-light">
-                    <i class="fad fa-check-double mr-2"></i> Publish version
-                    1.0.6
-                  </li>
+                  {% endfor %}
                 </ul>
               </div>
               <!-- end info -->
@@ -861,12 +873,13 @@
                 </p>
               </div>
 
-              <a href="#" class="btn-shadow mt-6">view details</a>
+              <a href="{% url 'sales_details' %}" class="btn-shadow mt-6"
+                >view details</a
+              >
             </div>
 
             <div class="">
-              <div id="sealsOverview"></div>
-              <div id="productSalesApexChart"></div>
+              <div id="productSalesApexChart" style="min-height: 350px"></div>
               <script id="product-names-data" type="application/json">
                 {{ product_names|safe }}
               </script>
@@ -889,8 +902,8 @@
               </div>
 
               <div class="flex flex-col">
-                <h1 class="font-semibold"><span class="num-2"></span> Sales</h1>
-                <p class="text-xs"><span class="num-2"></span> payments</p>
+                <h1 class="font-semibold">{{ dashboard_sales }} Sales</h1>
+                <p class="text-xs">{{ dashboard_payments }} payments</p>
               </div>
             </div>
           </div>
@@ -904,10 +917,8 @@
               </div>
 
               <div class="flex flex-col">
-                <h1 class="font-semibold">
-                  <span class="num-2"></span> Orders
-                </h1>
-                <p class="text-xs"><span class="num-2"></span> items</p>
+                <h1 class="font-semibold">{{ dashboard_orders }} Orders</h1>
+                <p class="text-xs">{{ dashboard_items }} items</p>
               </div>
             </div>
           </div>
@@ -921,8 +932,8 @@
               </div>
 
               <div class="flex flex-col">
-                <h1 class="font-semibold"><span class="num-2"></span> posts</h1>
-                <p class="text-xs"><span class="num-2"></span> active</p>
+                <h1 class="font-semibold">{{ dashboard_posts }} posts</h1>
+                <p class="text-xs">{{ dashboard_posts_active }} active</p>
               </div>
             </div>
           </div>
@@ -936,10 +947,10 @@
               </div>
 
               <div class="flex flex-col">
-                <h1 class="font-semibold">
-                  <span class="num-2"></span> comments
-                </h1>
-                <p class="text-xs"><span class="num-2"></span> approved</p>
+                <h1 class="font-semibold">{{ dashboard_comments }} comments</h1>
+                <p class="text-xs">
+                  {{ dashboard_comments_approved }} approved
+                </p>
               </div>
             </div>
           </div>
@@ -953,10 +964,8 @@
               </div>
 
               <div class="flex flex-col">
-                <h1 class="font-semibold">
-                  <span class="num-2"></span> memebrs
-                </h1>
-                <p class="text-xs"><span class="num-2"></span> online</p>
+                <h1 class="font-semibold">{{ total_members }} memebrs</h1>
+                <p class="text-xs">{{ online_members }} online</p>
               </div>
             </div>
           </div>
@@ -970,53 +979,17 @@
           <div class="card">
             <div class="card-header">Browser Stats</div>
 
-            <!-- brawser -->
+            {% for browser in browser_stats %}
             <div
-              class="p-6 flex flex-row justify-between items-center text-gray-600 border-b"
+              class="p-6 flex flex-row justify-between items-center text-gray-600 {% if forloop.last %}border-b-0{% else %}border-b{% endif %}"
             >
               <div class="flex items-center">
-                <i class="fab fa-chrome mr-4"></i>
-                <h1>google chrome</h1>
+                <i class="{{ browser.icon }} mr-4"></i>
+                <h1>{{ browser.name }}</h1>
               </div>
-              <div><span class="num-2"></span>%</div>
+              <div>{{ browser.percent }}%</div>
             </div>
-            <!-- end brawser -->
-
-            <!-- brawser -->
-            <div
-              class="p-6 flex flex-row justify-between items-center text-gray-600 border-b"
-            >
-              <div class="flex items-center">
-                <i class="fab fa-firefox mr-4"></i>
-                <h1>firefox</h1>
-              </div>
-              <div><span class="num-2"></span>%</div>
-            </div>
-            <!-- end brawser -->
-
-            <!-- brawser -->
-            <div
-              class="p-6 flex flex-row justify-between items-center text-gray-600 border-b"
-            >
-              <div class="flex items-center">
-                <i class="fab fa-internet-explorer mr-4"></i>
-                <h1>internet explorer</h1>
-              </div>
-              <div><span class="num-2"></span>%</div>
-            </div>
-            <!-- end brawser -->
-
-            <!-- brawser -->
-            <div
-              class="p-6 flex flex-row justify-between items-center text-gray-600 border-b-0"
-            >
-              <div class="flex items-center">
-                <i class="fab fa-safari mr-4"></i>
-                <h1>safari</h1>
-              </div>
-              <div><span class="num-2"></span>%</div>
-            </div>
-            <!-- end brawser -->
+            {% endfor %}
           </div>
           <!-- end Browser Stats -->
 
@@ -1030,110 +1003,40 @@
                   <th class="px-4 py-2 border-r"></th>
                   <th class="px-4 py-2 border-r">product</th>
                   <th class="px-4 py-2 border-r">price</th>
+                  <th class="px-4 py-2 border-r">qty</th>
                   <th class="px-4 py-2">date</th>
                 </tr>
               </thead>
               <tbody class="text-gray-600">
+                {% for sale in recent_sales %}
                 <tr>
                   <td
-                    class="border border-l-0 px-4 py-2 text-center text-green-500"
+                    class="border border-l-0 px-4 py-2 text-center {% if sale.price >= 100 %}text-green-500{% elif sale.price >= 50 %}text-yellow-500{% else %}text-red-500{% endif %}"
                   >
                     <i class="fad fa-circle"></i>
                   </td>
                   <td class="border border-l-0 px-4 py-2">
-                    Lightning to USB-C Adapter Lightning.
+                    {{ sale.product }}
                   </td>
+                  <td class="border border-l-0 px-4 py-2">${{ sale.price }}</td>
                   <td class="border border-l-0 px-4 py-2">
-                    $<span class="num-2"></span>
+                    {{ sale.quantity }}
                   </td>
                   <td class="border border-l-0 border-r-0 px-4 py-2">
-                    <span class="num-2"></span> minutes ago
+                    {{ sale.date }}
                   </td>
                 </tr>
-                <tr>
-                  <td
-                    class="border border-l-0 px-4 py-2 text-center text-yellow-500"
-                  >
-                    <i class="fad fa-circle"></i>
-                  </td>
-                  <td class="border border-l-0 px-4 py-2">Apple iPhone 8.</td>
-                  <td class="border border-l-0 px-4 py-2">
-                    $<span class="num-2"></span>
-                  </td>
-                  <td class="border border-l-0 border-r-0 px-4 py-2">
-                    <span class="num-2"></span> minutes ago
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    class="border border-l-0 px-4 py-2 text-center text-green-500"
-                  >
-                    <i class="fad fa-circle"></i>
-                  </td>
-                  <td class="border border-l-0 px-4 py-2">
-                    Apple MacBook Pro.
-                  </td>
-                  <td class="border border-l-0 px-4 py-2">
-                    $<span class="num-2"></span>
-                  </td>
-                  <td class="border border-l-0 border-r-0 px-4 py-2">
-                    <span class="num-2"></span> minutes ago
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    class="border border-l-0 px-4 py-2 text-center text-red-500"
-                  >
-                    <i class="fad fa-circle"></i>
-                  </td>
-                  <td class="border border-l-0 px-4 py-2">
-                    Samsung Galaxy S9.
-                  </td>
-                  <td class="border border-l-0 px-4 py-2">
-                    $<span class="num-2"></span>
-                  </td>
-                  <td class="border border-l-0 border-r-0 px-4 py-2">
-                    <span class="num-2"></span> minutes ago
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    class="border border-l-0 px-4 py-2 text-center text-yellow-500"
-                  >
-                    <i class="fad fa-circle"></i>
-                  </td>
-                  <td class="border border-l-0 px-4 py-2">
-                    Samsung Galaxy S8 256GB.
-                  </td>
-                  <td class="border border-l-0 px-4 py-2">
-                    $<span class="num-2"></span>
-                  </td>
-                  <td class="border border-l-0 border-r-0 px-4 py-2">
-                    <span class="num-2"></span> minutes ago
-                  </td>
-                </tr>
-                <tr>
-                  <td
-                    class="border border-l-0 border-b-0 px-4 py-2 text-center text-green-500"
-                  >
-                    <i class="fad fa-circle"></i>
-                  </td>
-                  <td class="border border-l-0 border-b-0 px-4 py-2">
-                    apple watch.
-                  </td>
-                  <td class="border border-l-0 border-b-0 px-4 py-2">
-                    $<span class="num-2"></span>
-                  </td>
-                  <td class="border border-l-0 border-b-0 border-r-0 px-4 py-2">
-                    <span class="num-2"></span> minutes ago
-                  </td>
-                </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>
           <!-- End Recent Sales -->
         </div>
         <!-- end quick Info -->
+
+        <!-- start Recent Orders -->
+        
+        <!-- end Recent Orders -->
       </div>
       <!-- end content -->
     </div>
@@ -1141,7 +1044,6 @@
 
     <!-- script -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
     <script src="{% static 'js/scripts.js' %}"></script>
 
     <!-- end script -->

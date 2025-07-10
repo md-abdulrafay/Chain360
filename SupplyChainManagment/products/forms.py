@@ -12,3 +12,6 @@ class ProductForm(forms.ModelForm):
             'category': forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded'}),
             'unit_type': forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded'}),
         }
+
+
+

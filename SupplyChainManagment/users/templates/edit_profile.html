@@ -1,0 +1,68 @@
+{% extends 'blank.html' %}
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 py-8">
+  <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+    <h2 class="text-3xl font-bold text-indigo-700 mb-2 text-center tracking-tight">Edit Profile</h2>
+    <p class="mb-6 text-gray-500 text-center">Update your account information and password</p>
+
+    <div class="mb-6 text-center">
+      <span class="inline-block px-4 py-1 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-xs uppercase tracking-wider">Current Role: {{ request.user.get_role_display }}</span>
+    </div>
+
+    {% if messages %}
+      <ul class="mb-4">
+        {% for message in messages %}
+          <li class="text-green-600 text-sm text-center">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <form method="POST" class="space-y-6">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">{{ field.label }}</label>
+          {% if field.name == 'username' %}
+            <input type="text" name="username" value="{{ field.value }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+          {% elif field.name == 'role' %}
+            <select name="role" id="id_role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300">
+              {% for choice in field.field.choices %}
+                <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+              {% endfor %}
+            </select>
+          {% else %}
+            <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+          {% endif %}
+          {% if field.errors %}
+            <p class="text-red-600 text-xs mt-1">{{ field.errors|striptags }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="mt-8">
+        <h3 class="text-xl font-semibold text-indigo-700 mb-4">Change Password</h3>
+        {{ password_form.non_field_errors }}
+        <div class="grid grid-cols-1 gap-4">
+          {% for field in password_form %}
+            <div>
+              <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">{{ field.label }}</label>
+              <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300" />
+              {% if field.errors %}
+                <p class="text-red-600 text-xs mt-1">{{ field.errors|striptags }}</p>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full mt-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all duration-200 text-lg tracking-wide"
+      >
+        Update Profile
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

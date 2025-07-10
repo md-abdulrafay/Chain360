@@ -37,3 +37,4 @@ def edit_product(request, pk):
         form = ProductForm(instance=product)
     return render(request, 'edit_product.html', {'form': form})
 
+

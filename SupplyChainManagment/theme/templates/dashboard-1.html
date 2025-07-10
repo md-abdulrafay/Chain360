@@ -102,7 +102,7 @@
                 <h1
                   class="text-sm text-gray-800 font-semibold m-0 p-0 leading-none"
                 >
-                  moeSaid
+                  {{ user_name }}
                 </h1>
                 <i class="fad fa-chevron-down ml-2 text-xs leading-none"></i>
               </div>
@@ -160,7 +160,7 @@
               <!-- item -->
               <a
                 class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
+                href="/users/logout/"
               >
                 <i class="fad fa-user-times text-xs mr-1"></i>
                 log out
@@ -597,18 +597,21 @@
             <div class="card-body h-full flex flex-col justify-between">
               <div>
                 <h1 class="text-lg font-bold tracking-wide">
-                  Congratulations Moe!
+                  Congratulations {{ user_name }}
                 </h1>
                 <p class="text-gray-600 mt-2">Best seller of the month</p>
               </div>
 
               <div class="flex flex-row mt-10 items-end">
                 <div class="flex-1">
-                  <h1 class="font-extrabold text-4xl text-teal-400">$89k</h1>
+                  <h1 class="font-extrabold text-4xl text-teal-400">
+                    ${{ sales_this_month|floatformat:0 }}
+                  </h1>
                   <p class="mt-3 mb-4 text-xs text-gray-500">
-                    You have done 57.6% more sales today.
+                    You have done {{ percent_more_sales|floatformat:1 }}% more
+                    sales this month.
                   </p>
-                  <a href="#" class="btn-shadow py-3"> view sales </a>
+                  <a href="{% url 'sales_details' %}" class="btn-shadow py-3"> view sales </a>
                 </div>
 
                 <div
@@ -627,83 +630,122 @@
             class="card p-0 overflow-hidden col-span-2 lg:col-span-1 flex flex-row lg:flex-col"
           >
             <!-- right -->
-            <div class="border-r border-gray-200 w-2/3 lg:w-full lg:mb-5">
+            <div class="border-r border-gray-200 w-full lg:w-full lg:mb-5">
               <!-- top -->
               <div
                 class="p-5 flex flex-row flex-wrap justify-between items-center"
               >
                 <h2 class="font-bold text-lg">Order Summary</h2>
                 <div class="flex flex-row justify-center items-center">
-                  <a href="#" class="btn mr-4 text-sm py-2 block">month</a>
-                  <a href="#" class="btn-shadow text-sm py-2 block">week</a>
+                  <a
+                    href="#"
+                    id="btn-month"
+                    class="btn mr-6 text-sm py-2 block active"
+                    >month</a
+                  >
+                  <a
+                    href="#"
+                    id="btn-week"
+                    class="btn-shadow text-sm py-2 block"
+                    >week</a
+                  >
                 </div>
               </div>
               <!-- end top -->
 
               <!-- chart -->
-              <div id="SummaryChart"></div>
+              <div style="position: relative">
+                <div id="SummaryChart"></div>
+                <style type="text/css">
+                  .apexcharts-flip-y {
+                    transform: scaleY(-1) translateY(-100%);
+                    transform-origin: top;
+                    transform-box: fill-box;
+                  }
+                  .apexcharts-flip-x {
+                    transform: scaleX(-1);
+                    transform-origin: center;
+                    transform-box: fill-box;
+                  }
+                  .apexcharts-legend {
+                    display: flex;
+                    overflow: auto;
+                    padding: 0 10px;
+                  }
+                  .apexcharts-legend.apexcharts-legend-group-horizontal {
+                    flex-direction: column;
+                  }
+                  .apexcharts-legend-group {
+                    display: flex;
+                  }
+                  .apexcharts-legend-group-vertical {
+                    flex-direction: column-reverse;
+                  }
+                  .apexcharts-legend.apx-legend-position-bottom,
+                  .apexcharts-legend.apx-legend-position-top {
+                    flex-wrap: wrap;
+                  }
+                  .apexcharts-legend.apx-legend-position-right,
+                  .apexcharts-legend.apx-legend-position-left {
+                    flex-direction: column;
+                    bottom: 0;
+                  }
+                  .apexcharts-legend.apx-legend-position-bottom.apexcharts-align-left,
+                  .apexcharts-legend.apx-legend-position-top.apexcharts-align-left,
+                  .apexcharts-legend.apx-legend-position-right,
+                  .apexcharts-legend.apx-legend-position-left {
+                    justify-content: flex-start;
+                    align-items: flex-start;
+                  }
+                  .apexcharts-legend.apx-legend-position-bottom.apexcharts-align-center,
+                  .apexcharts-legend.apx-legend-position-top.apexcharts-align-center {
+                    justify-content: center;
+                    align-items: center;
+                  }
+                  .apexcharts-legend.apx-legend-position-bottom.apexcharts-align-right,
+                  .apexcharts-legend.apx-legend-position-top.apexcharts-align-right {
+                    justify-content: flex-end;
+                    align-items: flex-end;
+                  }
+                  .apexcharts-legend-series {
+                    cursor: pointer;
+                    line-height: normal;
+                    display: flex;
+                    align-items: center;
+                  }
+                  .apexcharts-legend-text {
+                    position: relative;
+                    font-size: 14px;
+                  }
+                  .apexcharts-legend-text *,
+                  .apexcharts-legend-marker * {
+                    pointer-events: none;
+                  }
+                  .apexcharts-legend-marker {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    margin-right: 1px;
+                  }
+                  .apexcharts-legend-series.apexcharts-no-click {
+                    cursor: auto;
+                  }
+                  .apexcharts-legend .apexcharts-hidden-zero-series,
+                  .apexcharts-legend .apexcharts-hidden-null-series {
+                    display: none !important;
+                  }
+                  .apexcharts-inactive-legend {
+                    opacity: 0.45;
+                  }
+                </style>
+              </div>
               <!-- end chart -->
             </div>
             <!-- end right -->
 
-            <!-- left -->
-            <div class="w-1/3 lg:w-full">
-              <!-- top -->
-              <div class="p-5 border-b border-gray-200">
-                <h2 class="font-bold text-lg mb-6">Sales History</h2>
-
-                <div class="flex flex-row justify-between mb-3">
-                  <div class="">
-                    <h4 class="text-gray-600 font-thin">Puma Shoes</h4>
-                    <p class="text-gray-400 text-xs font-hairline">
-                      30 min ago
-                    </p>
-                  </div>
-                  <div class="text-sm font-medium">
-                    <span class="text-green-400">+</span> $250
-                  </div>
-                </div>
-
-                <div class="flex flex-row justify-between mb-3">
-                  <div class="">
-                    <h4 class="text-gray-600 font-thin">Google Pixel 4 xl</h4>
-                    <p class="text-gray-400 text-xs font-hairline">1 day ago</p>
-                  </div>
-                  <div class="text-sm font-medium">
-                    <span class="text-red-400">-</span> $10
-                  </div>
-                </div>
-
-                <div class="flex flex-row justify-between">
-                  <div class="">
-                    <h4 class="text-gray-600 font-thin">Nike Air Jordan</h4>
-                    <p class="text-gray-400 text-xs font-hairline">
-                      2 hour ago
-                    </p>
-                  </div>
-                  <div class="text-sm font-medium">
-                    <span class="text-red-400">-</span> $98
-                  </div>
-                </div>
-              </div>
-              <!-- end top -->
-
-              <!-- bottom -->
-              <div class="p-5">
-                <h2 class="font-bold text-lg mb-2">Sales History</h2>
-                <strong class="text-teal-400 font-extrabold text-xl"
-                  >$82,950.96</strong
-                >
-
-                <div class="bg-gray-300 h-2 rounded-full mt-2 relative">
-                  <div
-                    class="rounded-full bg-teal-400 h-full w-3/4 shadow-md"
-                  ></div>
-                </div>
-              </div>
-              <!-- end bottom -->
-            </div>
-            <!-- end left -->
+            <!-- end right -->
           </div>
         </div>
         <!-- end congrats & summary -->
@@ -813,7 +855,7 @@
             <div class="card-body">
               <div class="flex flex-row justify-between items-center">
                 <h1 class="font-extrabold text-lg">best sellers</h1>
-                <a href="#" class="btn-gray text-sm">view all</a>
+                <a href="{% url 'dashboard' %}" class="btn-gray text-sm">view all</a>
               </div>
 
               <table class="table-auto w-full mt-5 text-right">
@@ -829,105 +871,31 @@
                 </thead>
 
                 <tbody>
-                  <!-- item -->
-                  <tr class="">
+                  {% for item in best_sellers %}
+                  <tr>
                     <td
                       class="py-4 text-sm text-gray-600 flex flex-row items-center text-left"
                     >
-                      <div class="w-8 h-8 overflow-hidden mr-3">
-                        <img
-                          src="{% static 'img/sneakers.svg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      Sneakers and Tennis
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-2"></span>
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      <span class="num-3"></span>
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-4"></span>
-                    </td>
-                  </tr>
-                  <!-- end item -->
 
-                  <!-- item -->
-                  <tr class="">
-                    <td
-                      class="py-4 text-sm text-gray-600 flex flex-row items-center"
-                    >
-                      <div class="w-8 h-8 overflow-hidden mr-3">
-                        <img
-                          src="{% static 'img/socks.svg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      Crazy Socks & Graphic Socks for Men
+                      {{ item.name }}
                     </td>
                     <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-2"></span>
+                      ${{ item.price }}
                     </td>
                     <td class="py-4 text-xs text-gray-600">
-                      <span class="num-3"></span>
+                      {{ item.total_sold }}
                     </td>
                     <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-4"></span>
+                      ${{ item.total_sales }}
                     </td>
                   </tr>
-                  <!-- end item -->
-
-                  <!-- item -->
-                  <tr class="">
-                    <td
-                      class="py-4 text-sm text-gray-600 flex flex-row items-center"
-                    >
-                      <div class="w-8 h-8 overflow-hidden mr-3">
-                        <img
-                          src="{% static 'img/soccer.svg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      Adidas Soccer Ball
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-2"></span>
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      <span class="num-3"></span>
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-4"></span>
+                  {% empty %}
+                  <tr>
+                    <td colspan="4" class="text-center py-4 text-gray-400">
+                      No sales data
                     </td>
                   </tr>
-                  <!-- end item -->
-
-                  <!-- item -->
-                  <tr class="">
-                    <td
-                      class="py-4 text-sm text-gray-600 flex flex-row items-center"
-                    >
-                      <div class="w-8 h-8 overflow-hidden mr-3">
-                        <img
-                          src="{% static 'img/food.svg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      Best Chocolate Chip Cookies
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-2"></span>
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      <span class="num-3"></span>
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">
-                      $ <span class="num-4"></span>
-                    </td>
-                  </tr>
-                  <!-- end item -->
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
@@ -942,14 +910,14 @@
                 <thead class="text-left">
                   <tr>
                     <th
-                      class="w-1/2 pb-10 text-sm font-extrabold tracking-wide"
+                      class="w-1/6 pb-10 text-sm font-extrabold tracking-wide"
                     >
-                      customer
+                      order ID
                     </th>
                     <th
                       class="w-1/4 pb-10 text-sm font-extrabold tracking-wide text-right"
                     >
-                      Product
+                      Products
                     </th>
                     <th
                       class="w-1/4 pb-10 text-sm font-extrabold tracking-wide text-right"
@@ -972,255 +940,52 @@
 
                 <!-- table body -->
                 <tbody class="text-left text-gray-600">
-                  <!-- item -->
+                  {% for order in recent_orders|slice:':5' %}
                   <tr>
-                    <!-- name -->
-                    <th
+                    <td
                       class="mb-4 text-xs font-extrabold tracking-wider flex flex-row items-center w-full"
                     >
-                      <div class="w-8 h-8 overflow-hidden rounded-full">
-                        <img
-                          src="{% static 'img/user2.jpg' %}"
-                          class="object-cover"
-                        />
+
                       </div>
-                      <p class="ml-3 name-1">user name</p>
-                    </th>
-                    <!-- name -->
-
-                    <!-- product -->
-                    <th
+                      <span class="ml-3 name-1"
+                        >#{{  order.id }}</span
+                      >
+                    </td>
+                    <td
                       class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
                     >
-                      Nike Sport
-                    </th>
-                    <!-- product -->
-
-                    <!-- invoice -->
-                    <th
+                      <ul>
+                        {% for item in order.items.all|slice:':1' %}
+                        <li>{{ item.product.name }} ({{ item.quantity }})</li>
+                        {% endfor %}
+                        {% if order.items.count > 1 %}
+                        <li>+ {{ order.items.count|add:'-1' }} more</li>
+                        {% endif %}
+                      </ul>
+                    </td>
+                    <td
                       class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
                     >
-                      #<span class="num-4"></span>
-                    </th>
-                    <!-- invoice -->
-
-                    <!-- price -->
-                    <th
+                      {% if order.invoice %}#{{ order.invoice.invoice_number}}{% else %}-{% endif %}
+                    </td>
+                    <td
                       class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
                     >
-                      $<span class="num-2"></span>
-                    </th>
-                    <!-- price -->
-
-                    <!-- status -->
-                    <th
+                      {% if order.invoice %}${{ order.invoice.amount }}{% else %}-{% endif %}
+                    </td>
+                    <td
                       class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
                     >
-                      shipped
-                    </th>
-                    <!-- status -->
+                      {{ order.get_status_display }}
+                    </td>
                   </tr>
-                  <!-- item -->
-
-                  <!-- item -->
+                  {% empty %}
                   <tr>
-                    <!-- name -->
-                    <th
-                      class="mb-4 text-xs font-extrabold tracking-wider flex flex-row items-center w-full"
-                    >
-                      <div class="w-8 h-8 overflow-hidden rounded-full">
-                        <img
-                          src="{% static 'img/user3.jpg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      <p class="ml-3 name-1">user name</p>
-                    </th>
-                    <!-- name -->
-
-                    <!-- product -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      Nike Sport
-                    </th>
-                    <!-- product -->
-
-                    <!-- invoice -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      #<span class="num-4"></span>
-                    </th>
-                    <!-- invoice -->
-
-                    <!-- price -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      $<span class="num-2"></span>
-                    </th>
-                    <!-- price -->
-
-                    <!-- status -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      shipped
-                    </th>
-                    <!-- status -->
+                    <td colspan="5" class="text-center py-4 text-gray-400">
+                      No recent orders
+                    </td>
                   </tr>
-                  <!-- item -->
-
-                  <!-- item -->
-                  <tr>
-                    <!-- name -->
-                    <th
-                      class="mb-4 text-xs font-extrabold tracking-wider flex flex-row items-center w-full"
-                    >
-                      <div class="w-8 h-8 overflow-hidden rounded-full">
-                        <img
-                          src="{% static 'img/user2.jpg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      <p class="ml-3 name-1">user name</p>
-                    </th>
-                    <!-- name -->
-
-                    <!-- product -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      Nike Sport
-                    </th>
-                    <!-- product -->
-
-                    <!-- invoice -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      #<span class="num-4"></span>
-                    </th>
-                    <!-- invoice -->
-
-                    <!-- price -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      $<span class="num-2"></span>
-                    </th>
-                    <!-- price -->
-
-                    <!-- status -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      shipped
-                    </th>
-                    <!-- status -->
-                  </tr>
-                  <!-- item -->
-
-                  <!-- item -->
-                  <tr>
-                    <!-- name -->
-                    <th
-                      class="mb-4 text-xs font-extrabold tracking-wider flex flex-row items-center w-full"
-                    >
-                      <div class="w-8 h-8 overflow-hidden rounded-full">
-                        <img
-                          src="{% static 'img/user1.jpg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      <p class="ml-3 name-1">user name</p>
-                    </th>
-                    <!-- name -->
-
-                    <!-- product -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      Nike Sport
-                    </th>
-                    <!-- product -->
-
-                    <!-- invoice -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      #<span class="num-4"></span>
-                    </th>
-                    <!-- invoice -->
-
-                    <!-- price -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      $<span class="num-2"></span>
-                    </th>
-                    <!-- price -->
-
-                    <!-- status -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      shipped
-                    </th>
-                    <!-- status -->
-                  </tr>
-                  <!-- item -->
-
-                  <!-- item -->
-                  <tr>
-                    <!-- name -->
-                    <th
-                      class="mb-4 text-xs font-extrabold tracking-wider flex flex-row items-center w-full"
-                    >
-                      <div class="w-8 h-8 overflow-hidden rounded-full">
-                        <img
-                          src="{% static 'img/user3.jpg' %}"
-                          class="object-cover"
-                        />
-                      </div>
-                      <p class="ml-3 name-1">user name</p>
-                    </th>
-                    <!-- name -->
-
-                    <!-- product -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      Nike Sport
-                    </th>
-                    <!-- product -->
-
-                    <!-- invoice -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      #<span class="num-4"></span>
-                    </th>
-                    <!-- invoice -->
-
-                    <!-- price -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      $<span class="num-2"></span>
-                    </th>
-                    <!-- price -->
-
-                    <!-- status -->
-                    <th
-                      class="w-1/4 mb-4 text-xs font-extrabold tracking-wider text-right"
-                    >
-                      shipped
-                    </th>
-                    <!-- status -->
-                  </tr>
-                  <!-- item -->
+                  {% endfor %}
                 </tbody>
                 <!-- end table body -->
               </table>
@@ -1237,6 +1002,85 @@
     <!-- script -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
+    <script id="order-summary-days" type="application/json">
+      {{ days_in_month|safe }}
+    </script>
+    <script id="order-summary-sales" type="application/json">
+      {{ sales_per_day|safe }}
+    </script>
+    <script id="order-summary-weekdays" type="application/json">
+      {{ last_7_days_labels|safe }}
+    </script>
+    <script id="order-summary-weekly-sales" type="application/json">
+      {{ last_7_days_sales|safe }}
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var daysScript = document.getElementById("order-summary-days");
+        var salesScript = document.getElementById("order-summary-sales");
+        var weekDaysScript = document.getElementById("order-summary-weekdays");
+        var weekSalesScript = document.getElementById(
+          "order-summary-weekly-sales"
+        );
+        var btnMonth = document.getElementById("btn-month");
+        var btnWeek = document.getElementById("btn-week");
+        var chartInstance = null;
+        function renderChart(type) {
+          var categories, data, title;
+          if (type === "week") {
+            categories = JSON.parse(weekDaysScript.textContent.trim());
+            data = JSON.parse(weekSalesScript.textContent.trim());
+            title = "This Week";
+          } else {
+            categories = JSON.parse(daysScript.textContent.trim());
+            data = JSON.parse(salesScript.textContent.trim());
+            title = "This Month";
+          }
+          if (chartInstance) chartInstance.destroy();
+          chartInstance = new ApexCharts(
+            document.querySelector("#SummaryChart"),
+            {
+              chart: { type: "area", height: 250 },
+              series: [{ name: "Sales", data: data }],
+              xaxis: {
+                categories: categories,
+                title: {
+                  text: type === "week" ? "Day of Week" : "Day of Month",
+                },
+              },
+              yaxis: { title: { text: "Sales ($)" } },
+              colors: ["#22c55e"], // rich green (Tailwind emerald-500)
+              title: {
+                text: title,
+                align: "left",
+                style: { fontSize: "16px", fontWeight: "bold" },
+              },
+              dataLabels: { enabled: false },
+              stroke: { curve: "smooth" },
+              grid: { borderColor: "#e5e7eb" },
+            }
+          );
+          chartInstance.render();
+        }
+        btnMonth.addEventListener("click", function (e) {
+          e.preventDefault();
+          btnMonth.classList.add("active");
+          btnMonth.classList.remove("btn-shadow");
+          btnWeek.classList.remove("active");
+          btnWeek.classList.add("btn-shadow");
+          renderChart("month");
+        });
+        btnWeek.addEventListener("click", function (e) {
+          e.preventDefault();
+          btnWeek.classList.add("active");
+          btnWeek.classList.remove("btn-shadow");
+          btnMonth.classList.remove("active");
+          btnMonth.classList.add("btn-shadow");
+          renderChart("week");
+        });
+        renderChart("month");
+      });
+    </script>
     <!-- end script -->
   </body>
 </html>
