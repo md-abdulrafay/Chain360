@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: django-app
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn SupplyChainManagment.wsgi
-    envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: SupplyChainManagment.settings
