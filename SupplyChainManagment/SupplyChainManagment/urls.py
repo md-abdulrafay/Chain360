@@ -28,11 +28,7 @@ urlpatterns = [
     path('inventory/', include('inventory.urls')),
     path('shipments/', include('shipments.urls')),
     path('invoices/', include('invoices.urls')),
-
-
-
-
-
+    path('purchases/', include('purchases.urls')),
     path('__reload__/', include('django_browser_reload.urls')),  # For live reloading
 ]
 

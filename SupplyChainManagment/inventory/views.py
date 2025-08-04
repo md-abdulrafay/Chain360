@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import InventoryItem
 from .forms import InventoryItemForm
+from theme.notification_utils import notify_low_inventory
 
 # Create your views here.
 
@@ -12,7 +13,12 @@ def add_item(request):
     if request.method == 'POST':
         form = InventoryItemForm(request.POST)
         if form.is_valid():
-            form.save()
+            item = form.save()
+            
+            # Check for low inventory and send notification
+            if item.quantity < 5:
+                notify_low_inventory(request, item)
+            
             return redirect('inventory:inventory_list')
     else:
         form = InventoryItemForm()
@@ -23,7 +29,12 @@ def edit_item(request, pk):
     if request.method == 'POST':
         form = InventoryItemForm(request.POST, instance=item)
         if form.is_valid():
-            form.save()
+            updated_item = form.save()
+            
+            # Check for low inventory and send notification
+            if updated_item.quantity < 5:
+                notify_low_inventory(request, updated_item)
+            
             return redirect('inventory:inventory_list')
     else:
         form = InventoryItemForm(instance=item)

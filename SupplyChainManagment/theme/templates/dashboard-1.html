@@ -9,7 +9,7 @@
     />
     <link
       rel="shortcut icon"
-      href="{% static 'img/fav.png' %}"
+      href="{% static 'img/sc_logoblack.jpg' %}"
       type="image/x-icon"
     />
     <link
@@ -21,7 +21,7 @@
       type="text/css"
       href="{% static 'css/style.css' %}"
     />
-    <title>LogistixPro | Ecommerce</title>
+    <title>Chain360 | Ecommerce</title>
   </head>
   <body class="bg-gray-100">
     <!-- start navbar -->
@@ -30,8 +30,8 @@
     >
       <!-- logo -->
       <div class="flex-none w-56 flex flex-row items-center">
-        <img src="{% static 'img/logo.png' %}" class="w-10 flex-none" />
-        <strong class="capitalize ml-1 flex-1">LogistixPro</strong>
+        <img src="{% static 'img/logo360.png' %}" class="w-12 flex-none" />
+        <strong class="capitalize ml-0 flex-1">Chain360</strong>
 
         <button
           id="sliderBtn"
@@ -57,30 +57,7 @@
         <div
           class="text-gray-600 md:w-full md:flex md:flex-row md:justify-evenly md:pb-10 md:mb-10 md:border-b md:border-gray-200"
         >
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-envelope-open-text"></i
-          ></a>
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-comments-alt"></i
-          ></a>
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-check-circle"></i
-          ></a>
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-calendar-exclamation"></i
-          ></a>
+          
         </div>
         <!-- end left -->
 
@@ -118,7 +95,7 @@
               <!-- item -->
               <a
                 class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
+                href="{% url 'edit_profile' %}"
               >
                 <i class="fad fa-user-edit text-xs mr-1"></i>
                 edit my profile
@@ -126,19 +103,13 @@
               <!-- end item -->
 
               <!-- item -->
-              <a
-                class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <i class="fad fa-inbox-in text-xs mr-1"></i>
-                my inbox
-              </a>
+
               <!-- end item -->
 
               <!-- item -->
               <a
                 class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
+                href="{% url 'notifications' %}"
               >
                 <i class="fad fa-badge-check text-xs mr-1"></i>
                 tasks
@@ -146,13 +117,7 @@
               <!-- end item -->
 
               <!-- item -->
-              <a
-                class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <i class="fad fa-comment-alt-dots text-xs mr-1"></i>
-                chats
-              </a>
+
               <!-- end item -->
 
               <hr />
@@ -250,130 +215,13 @@
 
           <!-- messages -->
           <div class="dropdown relative mr-5 md:static">
-            <button
-              class="text-gray-500 menu-btn p-0 m-0 hover:text-gray-900 focus:text-gray-900 focus:outline-none transition-all ease-in-out duration-300"
-            >
-              <i class="fad fa-comments"></i>
-            </button>
+
 
             <button
               class="hidden fixed top-0 left-0 z-10 w-full h-full menu-overflow"
             ></button>
 
-            <div
-              class="menu hidden md:w-full md:right-0 rounded bg-white shadow-md absolute z-20 right-0 w-84 mt-5 py-2 animated faster"
-            >
-              <!-- top -->
-              <div
-                class="px-4 py-2 flex flex-row justify-between items-center capitalize font-semibold text-sm"
-              >
-                <h1>messages</h1>
-                <div
-                  class="bg-teal-100 border border-teal-200 text-teal-500 text-xs rounded px-1"
-                >
-                  <strong>3</strong>
-                </div>
-              </div>
-              <hr />
-              <!-- end top -->
-
-              <!-- body -->
-
-              <!-- item -->
-              <a
-                class="flex flex-row items-center justify-start px-4 py-4 capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <div
-                  class="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-100 border border-gray-300"
-                >
-                  <img
-                    class="w-full h-full object-cover"
-                    src="{% static 'img/user1.jpg' %}"
-                    alt=""
-                  />
-                </div>
-
-                <div class="flex-1 flex flex-rowbg-green-100">
-                  <div class="flex-1">
-                    <h1 class="text-sm font-semibold">mohamed said</h1>
-                    <p class="text-xs text-gray-500">yeah i know</p>
-                  </div>
-                  <div class="text-right text-xs text-gray-500">
-                    <p>4 min ago</p>
-                  </div>
-                </div>
-              </a>
-              <hr />
-              <!-- end item -->
-
-              <!-- item -->
-              <a
-                class="flex flex-row items-center justify-start px-4 py-4 capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <div
-                  class="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-100 border border-gray-300"
-                >
-                  <img
-                    class="w-full h-full object-cover"
-                    src="{% static 'img/user2.jpg' %}"
-                    alt=""
-                  />
-                </div>
-
-                <div class="flex-1 flex flex-rowbg-green-100">
-                  <div class="flex-1">
-                    <h1 class="text-sm font-semibold">sull goldmen</h1>
-                    <p class="text-xs text-gray-500">for sure</p>
-                  </div>
-                  <div class="text-right text-xs text-gray-500">
-                    <p>1 day ago</p>
-                  </div>
-                </div>
-              </a>
-              <hr />
-              <!-- end item -->
-
-              <!-- item -->
-              <a
-                class="flex flex-row items-center justify-start px-4 py-4 capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <div
-                  class="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-100 border border-gray-300"
-                >
-                  <img
-                    class="w-full h-full object-cover"
-                    src="{% static 'img/user3.jpg' %}"
-                    alt=""
-                  />
-                </div>
-
-                <div class="flex-1 flex flex-rowbg-green-100">
-                  <div class="flex-1">
-                    <h1 class="text-sm font-semibold">mick</h1>
-                    <p class="text-xs text-gray-500">is typing ....</p>
-                  </div>
-                  <div class="text-right text-xs text-gray-500">
-                    <p>31 feb</p>
-                  </div>
-                </div>
-              </a>
-              <!-- end item -->
-
-              <!-- end body -->
-
-              <!-- bottom -->
-              <hr />
-              <div class="px-4 py-2 mt-2">
-                <a
-                  href="#"
-                  class="border border-gray-300 block text-center text-xs uppercase rounded p-1 hover:text-teal-500 transition-all ease-in-out duration-500"
-                >
-                  view all
-                </a>
-              </div>
+            
               <!-- end bottom -->
             </div>
           </div>
@@ -441,13 +289,7 @@
           <!-- end link -->
 
           <!-- link -->
-          <a
-            href="{% url 'order_list' %}"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-comments text-xs mr-2"></i>
-            order
-          </a>
+
           <!-- end link -->
 
           <!-- link -->
@@ -459,7 +301,24 @@
             inventory
           </a>
           <!-- end link -->
-
+          
+          <!-- link -->
+          <a
+            href="{% url 'purchases:dashboard' %}"
+            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
+          >
+            <i class="fad fa-shopping-cart text-xs mr-2"></i>
+            purchases
+          </a>
+          <!-- end link -->
+          
+          <a
+            href="{% url 'order_list' %}"
+            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
+          >
+            <i class="fad fa-comments text-xs mr-2"></i>
+            order
+          </a>
           <!-- link -->
           <a
             href="{% url 'shipment_list' %}"
@@ -490,98 +349,7 @@
           </a>
           <!-- end link -->
 
-          <p class="uppercase text-xs text-gray-600 mb-4 mt-4 tracking-wider">
-            UI Elements
-          </p>
-
-          <!-- link -->
-          <a
-            href="./typography.html"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-text text-xs mr-2"></i>
-            typography
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="./alert.html"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-whistle text-xs mr-2"></i>
-            alerts
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="./buttons.html"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-cricket text-xs mr-2"></i>
-            buttons
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-box-open text-xs mr-2"></i>
-            Content
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-swatchbook text-xs mr-2"></i>
-            colors
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-atom-alt text-xs mr-2"></i>
-            icons
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-club text-xs mr-2"></i>
-            card
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-cheese-swiss text-xs mr-2"></i>
-            Widgets
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-computer-classic text-xs mr-2"></i>
-            Components
-          </a>
+          
           <!-- end link -->
         </div>
         <!-- end sidebar content -->
@@ -597,9 +365,9 @@
             <div class="card-body h-full flex flex-col justify-between">
               <div>
                 <h1 class="text-lg font-bold tracking-wide">
-                  Congratulations {{ user_name }}
+                  Greetings {{ user_name }}
                 </h1>
-                <p class="text-gray-600 mt-2">Best seller of the month</p>
+                <p class="text-gray-600 mt-2">What you did this month</p>
               </div>
 
               <div class="flex flex-row mt-10 items-end">
@@ -635,7 +403,7 @@
               <div
                 class="p-5 flex flex-row flex-wrap justify-between items-center"
               >
-                <h2 class="font-bold text-lg">Order Summary</h2>
+                <h2 class="font-bold text-lg">Customer Order Summary</h2>
                 <div class="flex flex-row justify-center items-center">
                   <a
                     href="#"
@@ -886,7 +654,7 @@
                       {{ item.total_sold }}
                     </td>
                     <td class="py-4 text-xs text-gray-600">
-                      ${{ item.total_sales }}
+                      ${{ item.total_profit }}
                     </td>
                   </tr>
                   {% empty %}

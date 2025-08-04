@@ -1,3 +1,34 @@
+// Toastify Notification Helper Functions
+function showToast(message, type = 'info') {
+    const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+    };
+    
+    Toastify({
+        text: message,
+        duration: 4000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: colors[type] || colors.info,
+        className: "toast-message",
+        stopOnFocus: true,
+        style: {
+            borderRadius: "8px",
+            fontWeight: "500",
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+        }
+    }).showToast();
+}
+
+// Convenience functions
+function showSuccess(message) { showToast(message, 'success'); }
+function showError(message) { showToast(message, 'error'); }
+function showWarning(message) { showToast(message, 'warning'); }
+function showInfo(message) { showToast(message, 'info'); }
+
 // get the close btn
 var alert_button = document.getElementsByClassName("alert-btn-close");
 

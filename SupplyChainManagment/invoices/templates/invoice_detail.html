@@ -23,7 +23,7 @@
             <strong>Due Date:</strong> {{ invoice.due_date }}
           </p>
           <p class="card-text">
-            <strong>Supplier:</strong> {{ supplier.name }}
+            <strong>Customer:</strong> {{ customer_name }}
           </p>
           <p class="card-text">
             <strong>Order Date:</strong> {{ order.order_date }}
@@ -40,20 +40,29 @@
             <thead>
               <tr>
                 <th>Product</th>
+                <th>Unit Price</th>
                 <th>Quantity</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
               {% for item in products %}
               <tr>
                 <td>{{ item.product.name }}</td>
+                <td>Rs. {{ item.unit_selling_price|floatformat:2 }}</td>
                 <td>{{ item.quantity }}</td>
+                <td>Rs. {{ item.total_price|floatformat:2 }}</td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
-          <p class="mt-3"><strong>Tax:</strong> Rs. {{ tax }}</p>
-          <p><strong>Delivery:</strong> Rs. {{ delivery }}</p>
+          <div class="text-end mt-3">
+            <p><strong>Subtotal:</strong> Rs. {{ subtotal|floatformat:2 }}</p>
+            <p><strong>Tax (5%):</strong> Rs. {{ tax|floatformat:2 }}</p>
+            <p><strong>Delivery:</strong> Rs. {{ delivery }}</p>
+            <hr>
+            <h5><strong>Total Amount:</strong> Rs. {{ invoice.amount|floatformat:2 }}</h5>
+          </div>
         </div>
       </div>
       <a href="{% url 'invoice_list' %}" class="btn btn-secondary mt-3"

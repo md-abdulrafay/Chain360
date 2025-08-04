@@ -1,0 +1,163 @@
+{% extends "blank.html" %}
+{% load static %}
+
+{% block title %}Receipt Details - {{ receipt.receipt_number }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto p-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Goods Receipt Details</h1>
+                <p class="text-gray-600 mt-2">Receipt Number: {{ receipt.receipt_number }}</p>
+            </div>
+            <div class="flex space-x-4">
+                <a href="{% url 'purchases:receipt_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                    <i class="fas fa-list mr-2"></i> All Receipts
+                </a>
+                <a href="{% url 'purchases:purchase_order_detail' po.pk %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                    <i class="fas fa-file-alt mr-2"></i> View PO
+                </a>
+            </div>
+        </div>
+
+        <!-- Receipt Information -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Receipt Details -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-receipt text-green-600 mr-3"></i>
+                    Receipt Information
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Receipt Number:</span>
+                        <span class="font-medium">{{ receipt.receipt_number }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Received Date:</span>
+                        <span class="font-medium">{{ receipt.received_date|date:"M d, Y H:i" }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Received By:</span>
+                        <span class="font-medium">{{ receipt.received_by.get_full_name|default:receipt.received_by.username }}</span>
+                    </div>
+                    {% if receipt.notes %}
+                    <div class="pt-4 border-t">
+                        <span class="text-gray-600 block mb-2">Notes:</span>
+                        <p class="text-gray-800 bg-gray-50 p-3 rounded-lg">{{ receipt.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Purchase Order Details -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center">
+                    <i class="fas fa-shopping-cart text-blue-600 mr-3"></i>
+                    Purchase Order
+                </h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">PO Number:</span>
+                        <span class="font-medium">{{ po.po_number }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Supplier:</span>
+                        <span class="font-medium">{{ po.supplier.name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">PO Status:</span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                            {% if po.status == 'received' %}bg-green-100 text-green-800
+                            {% elif po.status == 'partially_received' %}bg-yellow-100 text-yellow-800
+                            {% elif po.status == 'confirmed' %}bg-blue-100 text-blue-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ po.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">PO Total:</span>
+                        <span class="font-medium">${{ po.total_amount|floatformat:2 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Received -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-6 flex items-center">
+                <i class="fas fa-boxes text-purple-600 mr-3"></i>
+                Items Received
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ordered</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Received</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for item in items %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4">
+                                <div class="font-medium text-gray-900">{{ item.purchase_order_item.product.name }}</div>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">{{ item.purchase_order_item.product.sku }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-900">{{ item.purchase_order_item.quantity_ordered }}</td>
+                            <td class="px-4 py-4">
+                                <span class="text-sm font-medium text-green-600">{{ item.quantity_received }}</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-900">${{ item.purchase_order_item.unit_price|floatformat:2 }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-900">
+                                ${% widthratio item.quantity_received 1 item.purchase_order_item.unit_price as total %}{{ total|floatformat:2 }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">No items received</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% if items %}
+                    <tfoot class="bg-gray-50">
+                        <tr>
+                            <td colspan="5" class="px-4 py-3 text-right font-medium text-gray-900">Total Received Value:</td>
+                            <td class="px-4 py-3 font-medium text-gray-900">
+                                ${% for item in items %}{% widthratio item.quantity_received 1 item.purchase_order_item.unit_price as item_total %}{% if forloop.first %}{{ item_total|floatformat:2 }}{% else %}{% endif %}{% endfor %}
+                            </td>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                <div class="text-3xl font-bold text-blue-600 mb-2">{{ items.count }}</div>
+                <div class="text-gray-600">Items Received</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                <div class="text-3xl font-bold text-green-600 mb-2">
+                    {% for item in items %}{{ item.quantity_received }}{% if not forloop.last %} + {% endif %}{% endfor %}
+                </div>
+                <div class="text-gray-600">Total Quantity</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                <div class="text-3xl font-bold text-purple-600 mb-2">
+                    ${% for item in items %}{% widthratio item.quantity_received 1 item.purchase_order_item.unit_price as item_total %}{{ item_total|floatformat:0 }}{% if not forloop.last %} + {% endif %}{% endfor %}
+                </div>
+                <div class="text-gray-600">Total Value</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

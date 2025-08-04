@@ -6,13 +6,23 @@
   </head>
   <body class="bg-gray-100 p-10">
     <div class="max-w-5xl mx-auto bg-white shadow rounded p-6">
+      {% if user.role == 'admin' or user.role == 'staff' %}
+      <h1 class="text-2xl font-bold mb-4">All Suppliers</h1>
+      {% elif user.role == 'supplier' %}
+      <h1 class="text-2xl font-bold mb-4">My Supplier Profile</h1>
+      {% else %}
       <h1 class="text-2xl font-bold mb-4">Suppliers</h1>
-      <a
-        href="{% url 'add_supplier' %}"
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        + Add Supplier
-      </a>
+      {% endif %}
+      <div class="flex space-x-4 mb-6">
+        {% if user.role == 'admin' or user.role == 'staff' %}
+        <a
+          href="{% url 'register_supplier' %}"
+          class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          + Register New Supplier
+        </a>
+        {% endif %}
+      </div>
       <table class="table-auto w-full mt-6 border">
         <thead>
           <tr class="bg-gray-200">
@@ -20,7 +30,9 @@
             <th class="px-4 py-2">Contact</th>
             <th class="px-4 py-2">Phone</th>
             <th class="px-4 py-2">Email</th>
+            {% if user.role == 'admin' or user.role == 'staff' %}
             <th class="px-4 py-2">Actions</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -30,6 +42,7 @@
             <td class="px-4 py-2">{{ supplier.contact_person }}</td>
             <td class="px-4 py-2">{{ supplier.phone }}</td>
             <td class="px-4 py-2">{{ supplier.email }}</td>
+            {% if user.role == 'admin' or user.role == 'staff' %}
             <td class="px-4 py-2">
               <a
                 href="{% url 'edit_supplier' supplier.pk %}"
@@ -37,17 +50,26 @@
                 >Edit</a
               >
             </td>
+            {% endif %}
           </tr>
           {% empty %}
+          {% if user.role == 'supplier' %}
+          <tr>
+            <td colspan="4" class="text-center py-4 text-gray-500">
+              No supplier profile found for your account.
+            </td>
+          </tr>
+          {% else %}
           <tr>
             <td colspan="5" class="text-center py-4 text-gray-500">
               No suppliers yet.
             </td>
           </tr>
+          {% endif %}
           {% endfor %}
         </tbody>
       </table>
     </div>
   </body>
 </html>
-{% endblock %}
+{% endblock content%}

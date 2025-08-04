@@ -7,7 +7,6 @@ from django import forms
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
-        ('admin', 'Admin'),
         ('staff', 'Staff'),
         ('supplier', 'Supplier'),
     )
@@ -15,6 +14,16 @@ class CustomUser(AbstractUser):
     
     def __str__(self):
         return f"{self.username} ({self.role})"
+    
+    def get_supplier(self):
+        """Get the supplier instance for this user if they are a supplier"""
+        if self.role == 'supplier':
+            try:
+                from suppliers.models import Supplier
+                return Supplier.objects.get(user=self)
+            except Supplier.DoesNotExist:
+                return None
+        return None
 
 
 

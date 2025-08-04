@@ -1,5 +1,6 @@
 from django import forms
 from .models import Invoice
+from orders.models import Order
 
 class InvoiceForm(forms.ModelForm):
     class Meta:
@@ -11,3 +12,10 @@ class InvoiceForm(forms.ModelForm):
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'w-full px-3 py-2 border rounded'}),
             'payment_status': forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        # All users can create invoices for all customer orders
+        self.fields['order'].queryset = Order.objects.all()

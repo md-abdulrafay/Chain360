@@ -1,0 +1,42 @@
+{% extends 'blank.html' %}
+
+{% block title %}Notification Test{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-8">
+    <h1 class="text-3xl font-bold mb-8">Toastify Notification Test</h1>
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <button onclick="showSuccess('Operation completed successfully!')" 
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+            Success Toast
+        </button>
+        
+        <button onclick="showError('Something went wrong!')" 
+                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+            Error Toast
+        </button>
+        
+        <button onclick="showWarning('Please check your input!')" 
+                class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg">
+            Warning Toast
+        </button>
+        
+        <button onclick="showInfo('Here is some information!')" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+            Info Toast
+        </button>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">About the New Notification System</h2>
+        <ul class="space-y-2 text-gray-700">
+            <li>✅ <strong>Real-time notifications</strong> - Appear immediately on the correct page</li>
+            <li>✅ <strong>Auto-dismiss</strong> - Disappear after 4 seconds automatically</li>
+            <li>✅ <strong>No page persistence</strong> - Won't show up on random pages</li>
+            <li>✅ <strong>Better UX</strong> - Smooth animations and professional styling</li>
+            <li>✅ <strong>Click to dismiss</strong> - Users can close notifications manually</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

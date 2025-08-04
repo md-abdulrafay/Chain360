@@ -51,7 +51,7 @@ def dashboard(request):
     elif role == 'staff':
         return render(request, 'users/staff_dashboard.html')
     elif role == 'supplier':
-        return render(request, 'users/supplier_dashboard.html')
+        return redirect('supplier_dashboard')
     else:
         return HttpResponseForbidden("Unknown role. Access denied.")
 @login_required
@@ -63,6 +63,12 @@ def edit_profile(request):
         password_data_filled = all(request.POST.get(f, '') for f in password_fields)
         changed_fields = set(form.changed_data)
         updated = []
+
+        # Prevent suppliers from changing their role
+        if request.user.role == 'supplier' and 'role' in changed_fields:
+            changed_fields.remove('role')
+            # Reset the role to original value to prevent unauthorized changes
+            form.instance.role = request.user.role
 
         # Handle password change if all password fields are filled
         if password_data_filled:

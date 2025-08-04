@@ -1,4 +1,5 @@
 {% extends 'blank.html' %}
+
 {% block content %}
 <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 py-8">
   <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
@@ -9,14 +10,6 @@
       <span class="inline-block px-4 py-1 rounded-full bg-indigo-50 text-indigo-700 font-semibold text-xs uppercase tracking-wider">Current Role: {{ request.user.get_role_display }}</span>
     </div>
 
-    {% if messages %}
-      <ul class="mb-4">
-        {% for message in messages %}
-          <li class="text-green-600 text-sm text-center">{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
     <form method="POST" class="space-y-6">
       {% csrf_token %}
       {{ form.non_field_errors }}
@@ -26,11 +19,18 @@
           {% if field.name == 'username' %}
             <input type="text" name="username" value="{{ field.value }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
           {% elif field.name == 'role' %}
+            {% if user.role == 'admin' or user.role == 'staff' %}
             <select name="role" id="id_role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300">
               {% for choice in field.field.choices %}
                 <option value="{{ choice.0 }}" {% if field.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
               {% endfor %}
             </select>
+            {% else %}
+            <div class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600">
+              {{ user.get_role_display }} (Cannot be changed)
+            </div>
+            <input type="hidden" name="role" value="{{ field.value }}" />
+            {% endif %}
           {% else %}
             <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
           {% endif %}

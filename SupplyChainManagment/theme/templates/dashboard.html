@@ -9,7 +9,7 @@
     />
     <link
       rel="shortcut icon"
-      href="{% static 'img/fav.png' %}"
+      href="{% static 'img/sc_logoblack.jpg' %}"
       type="image/x-icon"
     />
     <link
@@ -21,7 +21,7 @@
       type="text/css"
       href="{% static 'css/style.css' %}"
     />
-    <title>LogistixPro | Analytics</title>
+    <title>Chain360 | Analytics</title>
   </head>
   <body class="bg-gray-100">
     <!-- start navbar -->
@@ -30,8 +30,8 @@
     >
       <!-- logo -->
       <div class="flex-none w-56 flex flex-row items-center">
-        <img src="{% static 'img/logo.png' %}" class="w-10 flex-none" />
-        <strong class="capitalize ml-1 flex-1">LogistixPro</strong>
+        <img src="{% static 'img/logo360.png' %}" class="w-12 flex-none" />
+        <strong class="capitalize ml-0 flex-1">Chain360</strong>
 
         <button
           id="sliderBtn"
@@ -57,30 +57,7 @@
         <div
           class="text-gray-600 md:w-full md:flex md:flex-row md:justify-evenly md:pb-10 md:mb-10 md:border-b md:border-gray-200"
         >
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-envelope-open-text"></i
-          ></a>
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-comments-alt"></i
-          ></a>
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-check-circle"></i
-          ></a>
-          <a
-            class="mr-2 transition duration-500 ease-in-out hover:text-gray-900"
-            href="#"
-            title="email"
-            ><i class="fad fa-calendar-exclamation"></i
-          ></a>
+          
         </div>
         <!-- end left -->
 
@@ -126,19 +103,13 @@
               <!-- end item -->
 
               <!-- item -->
-              <a
-                class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <i class="fad fa-inbox-in text-xs mr-1"></i>
-                my inbox
-              </a>
+
               <!-- end item -->
 
               <!-- item -->
               <a
                 class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
+                href="{% url 'notifications' %}"
               >
                 <i class="fad fa-badge-check text-xs mr-1"></i>
                 tasks
@@ -146,13 +117,7 @@
               <!-- end item -->
 
               <!-- item -->
-              <a
-                class="px-4 py-2 block capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 hover:text-gray-900 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <i class="fad fa-comment-alt-dots text-xs mr-1"></i>
-                chats
-              </a>
+
               <!-- end item -->
 
               <hr />
@@ -248,29 +213,13 @@
 
           <!-- messages -->
           <div class="dropdown relative mr-5 md:static">
-            <button
-              class="text-gray-500 menu-btn p-0 m-0 hover:text-gray-900 focus:text-gray-900 focus:outline-none transition-all ease-in-out duration-300"
-            >
-              <i class="fad fa-comments"></i>
-            </button>
+            
 
             <button
               class="hidden fixed top-0 left-0 z-10 w-full h-full menu-overflow"
             ></button>
 
-            <div
-              class="menu hidden md:w-full md:right-0 rounded bg-white shadow-md absolute z-20 right-0 w-84 mt-5 py-2 animated faster"
-            >
-              <!-- top -->
-              <div
-                class="px-4 py-2 flex flex-row justify-between items-center capitalize font-semibold text-sm"
-              >
-                <h1>messages</h1>
-                <div
-                  class="bg-teal-100 border border-teal-200 text-teal-500 text-xs rounded px-1"
-                >
-                  <strong>3</strong>
-                </div>
+            
               </div>
               <hr />
               <!-- end top -->
@@ -278,86 +227,11 @@
               <!-- body -->
 
               <!-- item -->
-              <a
-                class="flex flex-row items-center justify-start px-4 py-4 capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <div
-                  class="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-100 border border-gray-300"
-                >
-                  <img
-                    class="w-full h-full object-cover"
-                    src="{% static 'img/user1.jpg' %}"
-                    alt=""
-                  />
-                </div>
-
-                <div class="flex-1 flex flex-row bg-green-100">
-                  <div class="flex-1">
-                    <h1 class="text-sm font-semibold">mohamed said</h1>
-                    <p class="text-xs text-gray-500">yeah i know</p>
-                  </div>
-                  <div class="text-right text-xs text-gray-500">
-                    <p>4 min ago</p>
-                  </div>
-                </div>
-              </a>
-              <hr />
+              
               <!-- end item -->
 
               <!-- item -->
-              <a
-                class="flex flex-row items-center justify-start px-4 py-4 capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <div
-                  class="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-100 border border-gray-300"
-                >
-                  <img
-                    class="w-full h-full object-cover"
-                    src="{% static 'img/user2.jpg' %}"
-                    alt=""
-                  />
-                </div>
-
-                <div class="flex-1 flex flex-row bg-green-100">
-                  <div class="flex-1">
-                    <h1 class="text-sm font-semibold">sull goldmen</h1>
-                    <p class="text-xs text-gray-500">for sure</p>
-                  </div>
-                  <div class="text-right text-xs text-gray-500">
-                    <p>1 day ago</p>
-                  </div>
-                </div>
-              </a>
-              <hr />
-              <!-- end item -->
-
-              <!-- item -->
-              <a
-                class="flex flex-row items-center justify-start px-4 py-4 capitalize font-medium text-sm tracking-wide bg-white hover:bg-gray-200 transition-all duration-300 ease-in-out"
-                href="#"
-              >
-                <div
-                  class="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-100 border border-gray-300"
-                >
-                  <img
-                    class="w-full h-full object-cover"
-                    src="{% static 'img/user3.jpg' %}"
-                    alt=""
-                  />
-                </div>
-
-                <div class="flex-1 flex flex-row bg-green-100">
-                  <div class="flex-1">
-                    <h1 class="text-sm font-semibold">mick</h1>
-                    <p class="text-xs text-gray-500">is typing ....</p>
-                  </div>
-                  <div class="text-right text-xs text-gray-500">
-                    <p>31 feb</p>
-                  </div>
-                </div>
-              </a>
+             
               <!-- end item -->
 
               <!-- end body -->
@@ -365,12 +239,7 @@
               <!-- bottom -->
               <hr />
               <div class="px-4 py-2 mt-2">
-                <a
-                  href="#"
-                  class="border border-gray-300 block text-center text-xs uppercase rounded p-1 hover:text-teal-500 transition-all ease-in-out duration-500"
-                >
-                  view all
-                </a>
+                
               </div>
               <!-- end bottom -->
             </div>
@@ -439,13 +308,7 @@
           <!-- end link -->
 
           <!-- link -->
-          <a
-            href="{% url 'order_list' %}"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-comments text-xs mr-2"></i>
-            order
-          </a>
+
           <!-- end link -->
 
           <!-- link -->
@@ -457,7 +320,24 @@
             inventory
           </a>
           <!-- end link -->
-
+          
+          <!-- link -->
+          <a
+            href="{% url 'purchases:dashboard' %}"
+            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
+          >
+            <i class="fad fa-shopping-cart text-xs mr-2"></i>
+            purchases
+          </a>
+          <!-- end link -->
+          
+          <a
+            href="{% url 'order_list' %}"
+            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
+          >
+            <i class="fad fa-comments text-xs mr-2"></i>
+            order
+          </a>
           <!-- link -->
           <a
             href="{% url 'shipment_list' %}"
@@ -488,98 +368,11 @@
           </a>
           <!-- end link -->
 
-          <p class="uppercase text-xs text-gray-600 mb-4 mt-4 tracking-wider">
-            UI Elements
-          </p>
-
-          <!-- link -->
-          <a
-            href="./typography.html"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-text text-xs mr-2"></i>
-            typography
-          </a>
+          
           <!-- end link -->
 
           <!-- link -->
-          <a
-            href="./alert.html"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-whistle text-xs mr-2"></i>
-            alerts
-          </a>
-          <!-- end link -->
 
-          <!-- link -->
-          <a
-            href="./buttons.html"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-cricket text-xs mr-2"></i>
-            buttons
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-box-open text-xs mr-2"></i>
-            Content
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-swatchbook text-xs mr-2"></i>
-            colors
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-atom-alt text-xs mr-2"></i>
-            icons
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-club text-xs mr-2"></i>
-            card
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-cheese-swiss text-xs mr-2"></i>
-            Widgets
-          </a>
-          <!-- end link -->
-
-          <!-- link -->
-          <a
-            href="#"
-            class="mb-3 capitalize font-medium text-sm hover:text-teal-600 transition ease-in-out duration-500"
-          >
-            <i class="fad fa-computer-classic text-xs mr-2"></i>
-            Components
-          </a>
           <!-- end link -->
         </div>
         <!-- end sidebar content -->
@@ -892,6 +685,9 @@
         </div>
         <!-- end Sales Overview -->
 
+
+        <!-- end Profit Analysis -->
+
         <!-- start numbers -->
         <div class="grid grid-cols-5 gap-6 xl:grid-cols-2">
           <!-- card -->
@@ -938,23 +734,28 @@
             </div>
           </div>
           <!-- end card -->
+        <!-- Profit Analysis -->
 
           <!-- card -->
           <div class="card mt-6 xl:mt-1">
             <div class="card-body flex items-center">
-              <div class="px-3 py-2 rounded bg-red-600 text-white mr-3">
+              <div class="px-3 py-2 rounded bg-blue-600 text-white mr-3">
                 <i class="fad fa-comments"></i>
               </div>
 
               <div class="flex flex-col">
-                <h1 class="font-semibold">{{ dashboard_comments }} comments</h1>
+                <h1 class="font-semibold">${{ this_month_profit|floatformat:0|default:"0" }} Profit</h1>
                 <p class="text-xs">
-                  {{ dashboard_comments_approved }} approved
+                  {{ overall_profit_margin|floatformat:1|default:"0" }}% margin
                 </p>
               </div>
             </div>
           </div>
           <!-- end card -->
+
+          <!-- Profit card -->
+
+          <!-- end profit card -->
 
           <!-- card -->
           <div class="card mt-6 xl:mt-1 xl:col-span-2">
@@ -971,8 +772,88 @@
           </div>
           <!-- end card -->
         </div>
-        <!-- end nmbers -->
+                <!-- Profit Analysis -->
+        <div class="card mt-6">
+          <!-- header -->
 
+          <!-- end body -->
+        </div>
+        <!-- end nmbers -->
+          <div class="card-header flex flex-row justify-between">
+            <h1 class="h6">Profit Analysis</h1>
+            <div class="flex flex-row justify-center items-center">
+              <a href="">
+                <i class="fad fa-chevron-double-down mr-6"></i>
+              </a>
+            </div>
+          </div>
+          <!-- end header -->
+
+
+          <!-- body -->
+          <div class="card-body grid grid-cols-2 gap-6 lg:grid-cols-1">
+            <div class="p-8">
+              <h1 class="h2">${{ this_month_profit|floatformat:2|default:"0.00" }}</h1>
+              <p class="text-black font-medium">Profit this month</p>
+
+              <div class="mt-20 mb-2 flex items-center">
+                <div class="py-1 px-3 rounded {% if profit_change_percent >= 0 %}bg-green-200 text-green-900{% else %}bg-red-200 text-red-900{% endif %} mr-3">
+                  <i class="fa {% if profit_change_percent >= 0 %}fa-caret-up{% else %}fa-caret-down{% endif %}"></i>
+                </div>
+                <p class="text-black">
+                  <span class="font-semibold {% if profit_change_percent >= 0 %}text-green-400{% else %}text-red-400{% endif %}"
+                    >{{ profit_change_percent|floatformat:2|default:"0" }}%</span
+                  >
+                  <span class="{% if profit_change_percent >= 0 %}text-green-400{% else %}text-red-400{% endif %}"> {% if profit_change_percent >= 0 %}increase{% else %}decrease{% endif %}</span> in profit
+                  comparison to last month.
+                </p>
+              </div>
+
+              <div class="flex items-center">
+                <div class="py-1 px-3 rounded bg-blue-200 text-blue-900 mr-3">
+                  <i class="fa fa-percentage"></i>
+                </div>
+                <p class="text-black">
+                  <span class="font-semibold text-blue-400"
+                    >{{ overall_profit_margin|floatformat:2|default:"0" }}%</span
+                  >
+                  <span class="text-blue-400"> profit margin</span> on sales.
+                </p>
+              </div>
+
+              <div class="mt-4 flex items-center">
+                <div class="py-1 px-3 rounded bg-purple-200 text-purple-900 mr-3">
+                  <i class="fa fa-coins"></i>
+                </div>
+                <p class="text-black">
+                  <span class="font-semibold text-purple-400"
+                    >${{ total_profit|floatformat:2|default:"0.00" }}</span
+                  >
+                  <span class="text-purple-400"> total profit</span> to date.
+                </p>
+              </div>
+            </div>
+
+            <div class="p-4">
+              <h3 class="font-semibold mb-4">Top Profitable Products</h3>
+              <div class="space-y-3">
+                {% for product in top_profitable_products|slice:":5" %}
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                  <div>
+                    <p class="font-medium">{{ product.product__name }}</p>
+                    <p class="text-xs text-gray-500">{{ product.total_quantity }} units sold</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-semibold text-green-600">${{ product.total_profit|floatformat:2 }}</p>
+                  </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 text-center py-4">No profit data available yet</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <!-- end body -->
         <!-- start quick Info -->
         <div class="grid grid-cols-3 gap-6 mt-6 xl:grid-cols-1">
           <!-- Browser Stats -->

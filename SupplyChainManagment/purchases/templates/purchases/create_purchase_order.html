@@ -1,0 +1,194 @@
+{% extends "blank.html" %}
+{% load static %}
+{% load get_item %}
+
+
+
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-fill unit price when product quantity is entered
+            document.querySelectorAll('input[type="number"][name^="quantity_"]').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    const productId = this.name.split('_')[1];
+                    const row = this.closest('tr');
+                    const priceInput = row.querySelector('input[name="unit_price_' + productId + '"]');
+                    const totalSpan = row.querySelector('.total-price');
+                    
+                    if (parseInt(this.value) > 0 && !priceInput.value) {
+                        // Auto-fill unit price from product data
+                        fetch(`/purchases/api/product-price/?product_id=${productId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                priceInput.value = data.price;
+                                updateTotal(row);
+                            });
+                    } else {
+                        updateTotal(row);
+                    }
+                });
+            });
+
+            // Update total when unit price changes
+            document.querySelectorAll('input[name^="unit_price_"]').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    updateTotal(this.closest('tr'));
+                });
+            });
+
+            function updateTotal(row) {
+                const qtyInput = row.querySelector('input[name^="quantity_"]');
+                const priceInput = row.querySelector('input[name^="unit_price_"]');
+                const totalSpan = row.querySelector('.total-price');
+                
+                const qty = parseFloat(qtyInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+                const total = qty * price;
+                
+                totalSpan.textContent = '$' + total.toFixed(2);
+                updateGrandTotal();
+            }
+
+            function updateGrandTotal() {
+                let grandTotal = 0;
+                document.querySelectorAll('.total-price').forEach(function(span) {
+                    const value = parseFloat(span.textContent.replace('$', '')) || 0;
+                    grandTotal += value;
+                });
+                document.getElementById('grand-total').textContent = '$' + grandTotal.toFixed(2);
+            }
+        });
+    </script>
+    <div class="container mx-auto p-8">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-blue-600 text-white p-6">
+                <h1 class="text-2xl font-bold">Create Purchase Order</h1>
+                <p class="text-blue-100">Select supplier and products to purchase</p>
+            </div>
+            
+            <div class="p-6">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Purchase Order Header -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Supplier *</label>
+                            <select name="supplier" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select Supplier</option>
+                                {% for supplier in suppliers %}
+                                <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Expected Delivery Date</label>
+                            <input type="date" name="expected_delivery_date" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block mb-2 text-sm font-medium text-gray-700">Status</label>
+                            <select name="status" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="draft">Draft</option>
+                                <option value="sent">Send to Supplier</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="mb-8">
+                        <label class="block mb-2 text-sm font-medium text-gray-700">Notes</label>
+                        <textarea name="notes" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Add any special instructions or notes..."></textarea>
+                    </div>
+
+                    <!-- Products Table -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h2 class="text-lg font-semibold mb-4">Select Products to Purchase</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full table-auto">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Product</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">SKU</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Unit</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Current Inventory</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Quantity</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Unit Price</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="px-4 py-3">
+                                            <div>
+                                                <div class="font-medium text-gray-900">{{ product.name }}</div>
+                                                <div class="text-sm text-gray-500">{{ product.category.name }}</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-gray-600">{{ product.sku }}</td>
+                                        <td class="px-4 py-3">
+                                            <span class="text-sm text-gray-600 font-medium">
+                                                {{ inventory_units|get_item:product.id|default:"pcs" }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="text-sm text-blue-600 font-medium">
+                                                {{ inventory|get_item:product.id|default:"0" }} {{ inventory_units|get_item:product.id|default:"pcs" }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <input type="number" 
+                                                   name="quantity_{{ product.id }}" 
+                                                   min="0" 
+                                                   value="0" 
+                                                   class="w-20 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500" 
+                                                   placeholder="0">
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex">
+                                                <span class="px-2 py-1 text-sm text-gray-500">$</span>
+                                                <input type="number" 
+                                                       name="unit_price_{{ product.id }}" 
+                                                       step="0.01" 
+                                                       min="0" 
+                                                       value="{{ product.cost_price|default:product.cost_price }}"
+                                                       class="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500" 
+                                                       placeholder="0.00">
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="total-price font-medium text-gray-900">$0.00</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Total Section -->
+                    <div class="mt-6 bg-blue-50 rounded-lg p-6">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-medium text-gray-700">Grand Total:</span>
+                            <span id="grand-total" class="text-2xl font-bold text-blue-600">$0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-8 flex justify-end space-x-4">
+                        <a href="{% url 'purchases:purchase_order_list' %}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition duration-200">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200">
+                            Create Purchase Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

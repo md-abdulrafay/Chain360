@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required
+from theme.notification_utils import notify_product_added
 
 # Create your views here.
 
@@ -20,6 +21,10 @@ def add_product(request):
             product = form.save(commit=False)
             product.created_by = request.user
             product.save()
+            
+            # Send real-time toast notification
+            notify_product_added(request, product)
+            
             return redirect('product_list')
     else:
         form = ProductForm()

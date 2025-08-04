@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'inventory',
     'shipments',
     'invoices',
+    'purchases',
 ]
 
 TAILWIND_APP_NAME = 'theme'

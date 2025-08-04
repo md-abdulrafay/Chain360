@@ -2,24 +2,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Orders</title>
+    <title>Customer Orders</title>
   </head>
   <body class="bg-gray-100 p-10">
+    {% if user.role == 'admin' or user.role == 'staff' %}
     <div class="max-w-6xl mx-auto bg-white p-6 rounded shadow">
-      <h1 class="text-2xl font-bold mb-6">All Orders</h1>
+      <h1 class="text-2xl font-bold mb-6">Customer Orders</h1>
       <a
         href="{% url 'add_order' %}"
         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >+ Add Order</a
+        >+ New Customer Order</a
       >
       <table class="table-auto w-full mt-6 border">
         <thead class="bg-gray-200">
           <tr>
             <th class="px-4 py-2">Order ID</th>
-            <th class="px-4 py-2">Supplier</th>
+            <th class="px-4 py-2">Customer</th>
             <th class="px-4 py-2">Products</th>
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Status</th>
+            <th class="px-4 py-2">Total Value</th>
+            <th class="px-4 py-2">Expected Profit</th>
             <th class="px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -27,7 +30,7 @@
           {% for order in orders %}
           <tr class="border-t">
             <td class="px-4 py-2">{{ order.id }}</td>
-            <td class="px-4 py-2">{{ order.supplier.name }}</td>
+            <td class="px-4 py-2">{{ order.customer_name|default:"Walk-in Customer" }}</td>
             <td class="px-4 py-2">
               <ul>
                 {% for item in order.items.all|slice:":1" %}
@@ -39,6 +42,12 @@
             </td>
             <td class="px-4 py-2">{{ order.order_date|date:"Y-m-d" }}</td>
             <td class="px-4 py-2">{{ order.status|title }}</td>
+            <td class="px-4 py-2 font-semibold text-green-600">
+              ${{ order.calculated_total_value|floatformat:2 }}
+            </td>
+            <td class="px-4 py-2 font-semibold text-blue-600">
+              ${{ order.calculated_total_profit|floatformat:2 }}
+            </td>
             <td class="px-4 py-2">
               <a
                 href="{% url 'edit_order' order.pk %}"
@@ -57,6 +66,18 @@
         </tbody>
       </table>
     </div>
+    {% else %}
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded shadow text-center">
+      <div class="py-12">
+        <div class="mb-4">
+          <i class="fas fa-lock text-gray-400 text-6xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-700 mb-2">Access Restricted</h2>
+        <p class="text-gray-600 mb-4">Customer orders are only accessible to admin and staff members.</p>
+        <p class="text-sm text-gray-500">Your current role: <span class="font-semibold">{{ user.role|title }}</span></p>
+      </div>
+    </div>
+    {% endif %}
   </body>
 </html>
 {% endblock %}

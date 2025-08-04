@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Purchase Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .invoice-info {
+            display: table;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .invoice-info div {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+        
+        .invoice-details {
+            text-align: right;
+        }
+        
+        .info-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+            font-size: 16px;
+        }
+        
+        .info-box p {
+            margin: 3px 0;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .items-table th,
+        .items-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .items-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .items-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .items-table .text-right {
+            text-align: right;
+        }
+        
+        .totals {
+            width: 300px;
+            margin-left: auto;
+            margin-top: 20px;
+        }
+        
+        .totals table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .totals .total-row {
+            font-weight: bold;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background-color: #ffc107;
+            color: #000;
+        }
+        
+        .status-paid {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .status-overdue {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>PURCHASE INVOICE</h1>
+        <p>LogistixPro Supply Chain Management</p>
+        <p>Professional Invoice Document</p>
+    </div>
+
+    <div class="invoice-info">
+        <div>
+            <div class="info-box">
+                <h3>Bill From (Our Company)</h3>
+                <p><strong>LogistixPro</strong></p>
+                <p>Supply Chain Management</p>
+                <p>Email: info@logistixpro.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+        </div>
+        <div>
+            <div class="invoice-details">
+                <div class="info-box">
+                    <h3>Invoice Details</h3>
+                    <p><strong>Invoice #:</strong> {{ invoice.invoice_number }}</p>
+                    <p><strong>Invoice Date:</strong> {{ invoice.invoice_date|date:"F d, Y" }}</p>
+                    <p><strong>Due Date:</strong> {{ invoice.due_date|date:"F d, Y" }}</p>
+                    <p><strong>PO Number:</strong> {{ po.po_number }}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="status-badge status-{{ invoice.payment_status }}">
+                            {{ invoice.get_payment_status_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>Supplier Information</h3>
+        <p><strong>{{ supplier.name }}</strong></p>
+        <p>{{ supplier.contact_person }}</p>
+        <p>Email: {{ supplier.email }}</p>
+        <p>Phone: {{ supplier.phone }}</p>
+        {% if supplier.address %}
+        <p>Address: {{ supplier.address }}</p>
+        {% endif %}
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th class="text-right">Quantity</th>
+                <th class="text-right">Unit Price</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <strong>{{ item.product.name }}</strong>
+                    {% if item.product.category %}
+                    <br><small>{{ item.product.category.name }}</small>
+                    {% endif %}
+                </td>
+                <td>{{ item.product.sku }}</td>
+                <td class="text-right">{{ item.quantity_ordered }}</td>
+                <td class="text-right">${{ item.unit_price|floatformat:2 }}</td>
+                <td class="text-right">${{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <table>
+            <tr>
+                <td>Subtotal:</td>
+                <td class="text-right">${{ subtotal|floatformat:2 }}</td>
+            </tr>
+            {% if delivery > 0 %}
+            <tr>
+                <td>Delivery:</td>
+                <td class="text-right">${{ delivery|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            {% if tax > 0 %}
+            <tr>
+                <td>Tax:</td>
+                <td class="text-right">${{ tax|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            <tr class="total-row">
+                <td>Total Amount:</td>
+                <td class="text-right">${{ invoice.amount|floatformat:2 }}</td>
+            </tr>
+        </table>
+    </div>
+
+    {% if invoice.notes %}
+    <div class="info-box" style="margin-top: 30px;">
+        <h3>Notes</h3>
+        <p>{{ invoice.notes }}</p>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>This is a computer-generated document. No signature required.</p>
+        <p>Generated on {{ "now"|date:"F d, Y g:i A" }}</p>
+        <p>Thank you for your business!</p>
+    </div>
+</body>
+</html>

@@ -1,113 +1,416 @@
-{% extends 'blank.html' %} {% block content %}
-<div class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="w-full max-w-5xl">
-    <div class="bg-white rounded-lg shadow-lg p-8 mb-8 mt-4">
-      <h1 class="text-3xl font-bold mb-4 text-blue-700 flex items-center gap-2">
-        <svg
-          class="w-8 h-8 text-blue-500"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M3 3v18h18M3 9h18M9 21V3"
-          />
-        </svg>
-        Sales Details
-      </h1>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h2 class="text-xl font-semibold mb-2 text-gray-700">Summary</h2>
-          <ul class="space-y-2">
-            <li>
-              <span class="font-semibold">Sales this month:</span>
-              <span class="text-green-600"
-                >${{ sales_this_month|floatformat:2 }}</span
-              >
-            </li>
-            <li>
-              <span class="font-semibold">Orders this month:</span>
-              <span class="text-blue-600">{{ orders_this_month }}</span>
-            </li>
-            <li>
-              <span class="font-semibold">Revenue per sale (this month):</span>
-              <span class="text-indigo-600"
-                >${{ revenue_per_sale_this_month|floatformat:2 }}</span
-              >
-            </li>
-            <li>
-              <span class="font-semibold">Sales last month:</span>
-              <span class="text-green-600"
-                >${{ sales_last_month|floatformat:2 }}</span
-              >
-            </li>
-            <li>
-              <span class="font-semibold">Orders last month:</span>
-              <span class="text-blue-600">{{ orders_last_month }}</span>
-            </li>
-            <li>
-              <span class="font-semibold">Revenue per sale (last month):</span>
-              <span class="text-indigo-600"
-                >${{ revenue_per_sale_last_month|floatformat:2 }}</span
-              >
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h2 class="text-xl font-semibold mb-2 text-gray-700">
-            Sales Per Day (This Month)
-          </h2>
-          <div class="overflow-x-auto">
-            <table
-              class="min-w-full bg-white border border-gray-200 rounded-lg"
-            >
-              <thead>
-                <tr class="bg-gray-100">
-                  <th class="px-4 py-2 text-left">Day</th>
-                  <th class="px-4 py-2 text-left">Sales</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for day, sales in sales_per_day_data %}
-                <tr class="border-b">
-                  <td class="px-4 py-2">{{ day }}</td>
-                  <td class="px-4 py-2 text-green-700 font-semibold">
-                    ${{ sales|floatformat:2 }}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+{% extends 'blank.html' %} 
+{% load static %}
+{% block content %}
+<!-- start content -->
+<div class="bg-gray-100 flex-1 p-6 md:mt-16">
+  <!-- Page Header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Complete Sales Analytics Dashboard</h1>
+    <p class="text-gray-600">Comprehensive sales performance, profit analysis, and business intelligence</p>
+  </div>
+
+  <!-- Primary Metrics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    <!-- This Month Sales -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Sales This Month</p>
+            <p class="text-2xl font-bold text-green-600">${{ sales_this_month|floatformat:2 }}</p>
+            <p class="text-xs text-gray-500">{{ orders_this_month }} orders</p>
+            {% if percent_more_sales %}
+            <p class="text-xs {% if percent_more_sales > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+              {% if percent_more_sales > 0 %}+{% endif %}{{ percent_more_sales|floatformat:1 }}% vs last month
+            </p>
+            {% endif %}
+          </div>
+          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <i class="fad fa-chart-line text-green-600 text-xl"></i>
           </div>
         </div>
       </div>
     </div>
-    <div class="bg-white rounded-lg shadow-lg p-8">
-      <h2 class="text-2xl font-semibold mb-4 text-blue-700">
-        Product Sales (This Month)
-      </h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200 rounded-lg">
-          <thead>
-            <tr class="bg-gray-100">
-              <th class="px-4 py-2 text-left">Product</th>
-              <th class="px-4 py-2 text-left">Units Sold</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for name, count in product_sales_data %}
-            <tr class="border-b">
-              <td class="px-4 py-2">{{ name }}</td>
-              <td class="px-4 py-2 text-blue-700 font-semibold">{{ count }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+
+    <!-- This Month Profit -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Profit This Month</p>
+            <p class="text-2xl font-bold text-purple-600">${{ this_month_profit|floatformat:2 }}</p>
+            <p class="text-xs text-gray-500">Gross profit</p>
+            {% if profit_change_percent %}
+            <p class="text-xs {% if profit_change_percent > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+              {% if profit_change_percent > 0 %}+{% endif %}{{ profit_change_percent|floatformat:1 }}% vs last month
+            </p>
+            {% endif %}
+          </div>
+          <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+            <i class="fad fa-money-bill-wave text-purple-600 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profit Margin -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Profit Margin</p>
+            <p class="text-2xl font-bold text-orange-600">{{ overall_profit_margin|floatformat:1 }}%</p>
+            <p class="text-xs text-gray-500">Overall margin</p>
+          </div>
+          <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+            <i class="fad fa-percentage text-orange-600 text-xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avg Revenue Per Sale -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Avg. Revenue/Sale</p>
+            <p class="text-2xl font-bold text-blue-600">${{ revenue_per_sale_this_month|floatformat:2 }}</p>
+            <p class="text-xs text-gray-500">This month</p>
+            {% if percent_revenue_per_sale %}
+            <p class="text-xs {% if percent_revenue_per_sale > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+              {% if percent_revenue_per_sale > 0 %}+{% endif %}{{ percent_revenue_per_sale|floatformat:1 }}% vs last month
+            </p>
+            {% endif %}
+          </div>
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <i class="fad fa-dollar-sign text-blue-600 text-xl"></i>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Comparison Metrics -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <!-- Last Month Comparison -->
+    <div class="card">
+      <div class="card-body">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Last Month Comparison</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Sales</span>
+            <span class="font-semibold text-blue-600">${{ sales_last_month|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Orders</span>
+            <span class="font-semibold text-blue-600">{{ orders_last_month }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Profit</span>
+            <span class="font-semibold text-purple-600">${{ last_month_profit|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Avg/Sale</span>
+            <span class="font-semibold text-green-600">${{ revenue_per_sale_last_month|floatformat:2 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Purchase vs Sales -->
+    <div class="card">
+      <div class="card-body">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Cost Analysis</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Total Sales</span>
+            <span class="font-semibold text-green-600">${{ sales_this_month|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Purchase Cost</span>
+            <span class="font-semibold text-red-600">${{ total_purchase_cost|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Gross Profit</span>
+            <span class="font-semibold text-purple-600">${{ this_month_profit|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Margin %</span>
+            <span class="font-semibold text-orange-600">{{ overall_profit_margin|floatformat:1 }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Performance -->
+    <div class="card">
+      <div class="card-body">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Recent Performance</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Today</span>
+            <span class="font-semibold text-green-600">${{ sales_today|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Yesterday</span>
+            <span class="font-semibold text-blue-600">${{ sales_yesterday|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">This Week</span>
+            <span class="font-semibold text-purple-600">${{ sales_last_week|floatformat:2 }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-600">Last 90 Days</span>
+            <span class="font-semibold text-orange-600">${{ sales_90_days|floatformat:2 }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Profitable Products -->
+  {% if top_profitable_products %}
+  <div class="mb-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-800">Top Profitable Products</h2>
+          <i class="fad fa-trophy text-yellow-500"></i>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table-auto w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Profit</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity Sold</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Profit/Unit</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {% for product in top_profitable_products %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ product.product__name }}</td>
+                <td class="px-4 py-3 text-sm font-semibold text-right text-green-600">${{ product.total_profit|floatformat:2 }}</td>
+                <td class="px-4 py-3 text-sm text-right text-blue-600">{{ product.total_quantity }}</td>
+                <td class="px-4 py-3 text-sm text-right text-purple-600">
+                  {% if product.total_quantity %}
+                    ${% widthratio product.total_profit product.total_quantity 1 %}
+                  {% else %}
+                    $0.00
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Sales Data Tables -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Daily Sales Table -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-800">Daily Sales Breakdown</h2>
+          <i class="fad fa-calendar-day text-gray-400"></i>
+        </div>
+        <div class="overflow-x-auto max-h-96">
+          <table class="table-auto w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Sales</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Growth</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {% for day, sales in sales_per_day_data %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm text-gray-900">{{ day }}</td>
+                <td class="px-4 py-3 text-sm font-semibold text-right">
+                  <span class="text-green-600">${{ sales|floatformat:2 }}</span>
+                </td>
+                <td class="px-4 py-3 text-sm text-right">
+                  {% if forloop.counter > 1 %}
+                    {% if sales > 0 %}
+                      <span class="text-green-500 text-xs">↗</span>
+                    {% else %}
+                      <span class="text-gray-400 text-xs">→</span>
+                    {% endif %}
+                  {% else %}
+                    <span class="text-gray-400 text-xs">-</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3" class="px-4 py-3 text-center text-gray-500">No sales data available</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Performance Table -->
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-800">Product Performance Analysis</h2>
+          <i class="fad fa-box text-gray-400"></i>
+        </div>
+        <div class="overflow-x-auto max-h-96">
+          <table class="table-auto w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Units</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {% for name, count in product_sales_data %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm text-gray-900">{{ name }}</td>
+                <td class="px-4 py-3 text-sm font-semibold text-right">
+                  <span class="text-blue-600">{{ count }}</span>
+                </td>
+                <td class="px-4 py-3 text-sm font-semibold text-right">
+                  {% for item in best_sellers %}
+                    {% if item.name == name %}
+                      <span class="text-green-600">${{ item.total_sales|floatformat:2 }}</span>
+                    {% endif %}
+                  {% endfor %}
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3" class="px-4 py-3 text-center text-gray-500">No product sales data available</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Best Sellers with Complete Details -->
+  {% if best_sellers %}
+  <div class="mb-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-800">Complete Product Analysis</h2>
+          <i class="fad fa-chart-bar text-yellow-500"></i>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {% for item in best_sellers %}
+          <div class="bg-gradient-to-r from-teal-50 to-blue-50 rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-gray-800">{{ item.name }}</h3>
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fad fa-box-open text-blue-600 text-sm"></i>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Unit Price:</span>
+                <span class="font-semibold text-green-600">${{ item.price|floatformat:2 }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Units Sold:</span>
+                <span class="font-semibold text-blue-600">{{ item.total_sold }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Total Revenue:</span>
+                <span class="font-semibold text-purple-600">${{ item.total_sales|floatformat:2 }}</span>
+              </div>
+              {% if item.total_profit %}
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Total Profit:</span>
+                <span class="font-semibold text-orange-600">${{ item.total_profit|floatformat:2 }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Profit Margin:</span>
+                <span class="font-semibold text-red-600">
+                  {% if item.total_sales > 0 %}
+                    {% widthratio item.total_profit item.total_sales 100 %}%
+                  {% else %}
+                    0%
+                  {% endif %}
+                </span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Customer Analytics -->
+  {% if top_customers %}
+  <div class="mb-6">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-gray-800">Top Customers</h2>
+          <i class="fad fa-users text-blue-500"></i>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="table-auto w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Contribution</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {% for customer in top_customers %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ customer.customer_name }}</td>
+                <td class="px-4 py-3 text-sm font-semibold text-right text-blue-600">{{ customer.count }}</td>
+                <td class="px-4 py-3 text-sm text-right">
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full" style="width: {% widthratio customer.count 20 100 %}%"></div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Action Buttons -->
+  <div class="flex justify-center space-x-4">
+    <a href="{% url 'dashboard_1' %}" class="btn-shadow px-6 py-3 inline-flex items-center">
+      <i class="fad fa-arrow-left mr-2"></i>
+      Back to Dashboard
+    </a>
+    <a href="{% url 'order_list' %}" class="btn px-6 py-3 inline-flex items-center">
+      <i class="fad fa-list mr-2"></i>
+      View All Orders
+    </a>
+    <a href="{% url 'product_list' %}" class="btn-gray px-6 py-3 inline-flex items-center">
+      <i class="fad fa-boxes mr-2"></i>
+      Manage Products
+    </a>
+  </div>
 </div>
+<!-- end content -->
 {% endblock %}

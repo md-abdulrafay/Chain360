@@ -102,7 +102,7 @@
         </div>
       </div>
       <div class="info">
-        <p><strong>Supplier:</strong> {{ supplier.name }}</p>
+        <p><strong>Customer:</strong> {{ customer_name }}</p>
         <p><strong>Order Date:</strong> {{ order.order_date }}</p>
         <p><strong>Status:</strong> {{ invoice.payment_status|capfirst }}</p>
       </div>
@@ -111,22 +111,28 @@
         <thead>
           <tr>
             <th>Product</th>
+            <th>Unit Price</th>
             <th>Quantity</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
           {% for item in products %}
           <tr>
             <td>{{ item.product.name }}</td>
+            <td>Rs. {{ item.unit_selling_price|floatformat:2 }}</td>
             <td>{{ item.quantity }}</td>
+            <td>Rs. {{ item.total_price|floatformat:2 }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       <div class="summary">
-        <p><strong>Tax:</strong> Rs. {{ tax }}</p>
+        <p><strong>Subtotal:</strong> Rs. {{ subtotal|floatformat:2 }}</p>
+        <p><strong>Tax (5%):</strong> Rs. {{ tax|floatformat:2 }}</p>
         <p><strong>Delivery:</strong> Rs. {{ delivery }}</p>
-        <p><strong>Total Amount:</strong> Rs. {{ invoice.amount }}</p>
+        <hr style="border: 1px solid #4f8cff;">
+        <p style="font-size: 1.2em;"><strong>Total Amount:</strong> Rs. {{ invoice.amount|floatformat:2 }}</p>
       </div>
       <div class="footer">
         <p>Thank you for your business!</p>

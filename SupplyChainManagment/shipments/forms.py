@@ -18,21 +18,26 @@ class ShipmentForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         from shipments.models import Shipment
         shipped_orders = Shipment.objects.values_list('order_id', flat=True)
+        
+        # Base queryset for orders - only approved orders that haven't been shipped yet
+        base_queryset = Order.objects.filter(
+            status__in=['approved', 'shipped', 'delivered', 'dispatched']
+        )
+        
+        # Note: No supplier filtering needed since only staff/admin access this form
+        
         # If editing, include the current order in the queryset
         instance = kwargs.get('instance', None)
         if instance and instance.order_id:
-            self.fields['order'].queryset = Order.objects.filter(
-                status__in=['approved', 'shipped', 'delivered', 'dispatched']
-            ).filter(
+            self.fields['order'].queryset = base_queryset.filter(
                 Q(id=instance.order_id) | ~Q(id__in=shipped_orders)
             )
         else:
-            self.fields['order'].queryset = Order.objects.filter(
-                status__in=['approved', 'shipped', 'delivered', 'dispatched']
-            ).exclude(id__in=shipped_orders)
+            self.fields['order'].queryset = base_queryset.exclude(id__in=shipped_orders)
 
     def clean(self):
         cleaned_data = super().clean()

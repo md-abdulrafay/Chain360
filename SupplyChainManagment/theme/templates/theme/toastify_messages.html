@@ -1,0 +1,21 @@
+{% if messages %}
+<script>
+    // Render Toastify notifications from Django messages
+    {% for message in messages %}
+        Toastify({
+            text: "{{ message|escapejs }}",
+            duration: 4000,
+            gravity: "top",
+            position: "center",
+            backgroundColor: "{% if message.tags == 'error' %}#ef4444{% elif message.tags == 'warning' %}#f59e0b{% elif message.tags == 'success' %}#10b981{% else %}#3b82f6{% endif %}",
+            className: "toast-message",
+            stopOnFocus: true,
+            style: {
+                borderRadius: "8px",
+                fontWeight: "500",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            }
+        }).showToast();
+    {% endfor %}
+</script>
+{% endif %}

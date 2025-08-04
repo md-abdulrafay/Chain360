@@ -1,0 +1,183 @@
+{% extends "blank.html" %}
+{% load static %}
+
+{% block title %}Receive Goods - {{ po.po_number }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto p-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Receive Goods</h1>
+                <p class="text-gray-600 mt-2">Purchase Order: {{ po.po_number }} - {{ po.supplier.name }}</p>
+            </div>
+            <a href="{% url 'purchases:purchase_order_detail' po.pk %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to PO
+            </a>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <form method="post" id="receive-goods-form">
+                {% csrf_token %}
+                
+                <!-- Receipt Header -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label for="id_received_date" class="block text-sm font-medium text-gray-700 mb-2">
+                            Received Date <span class="text-red-500">*</span>
+                        </label>
+                        <input type="datetime-local" 
+                               id="id_received_date" 
+                               name="received_date" 
+                               class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
+                               value="{{ form.received_date.value|date:'Y-m-d\TH:i' }}"
+                               required>
+                        {% if form.received_date.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.received_date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="id_notes" class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                        <textarea id="id_notes" 
+                                  name="notes" 
+                                  rows="3" 
+                                  class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-3"
+                                  placeholder="Enter any notes about the delivery...">{{ form.notes.value|default:'' }}</textarea>
+                        {% if form.notes.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.notes.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Items to Receive -->
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold mb-6">Items to Receive</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ordered</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Already Received</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Receive Now</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for item in items %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-4 py-4">
+                                        <div class="font-medium text-gray-900">{{ item.product.name }}</div>
+                                    </td>
+                                    <td class="px-4 py-4 text-sm text-gray-500">{{ item.product.sku }}</td>
+                                    <td class="px-4 py-4 text-sm text-gray-900">{{ item.quantity_ordered }}</td>
+                                    <td class="px-4 py-4 text-sm text-gray-900">{{ item.quantity_received }}</td>
+                                    <td class="px-4 py-4 text-sm text-gray-900">{{ item.quantity_pending }}</td>
+                                    <td class="px-4 py-4">
+                                        <input type="hidden" name="item_id_{{ item.id }}" value="{{ item.id }}">
+                                        <input type="number" 
+                                               name="quantity_{{ item.id }}" 
+                                               class="w-20 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2"
+                                               min="0" 
+                                               max="{{ item.quantity_pending }}" 
+                                               value="0"
+                                               placeholder="0">
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">No items to receive</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-4">
+                    <a href="{% url 'purchases:purchase_order_detail' po.pk %}" 
+                       class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg transition duration-200">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center">
+                        <i class="fas fa-check mr-2"></i> Receive Goods
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Recent Receipts -->
+        {% if recent_receipts %}
+        <div class="bg-white rounded-xl shadow-lg p-8 mt-8">
+            <h2 class="text-xl font-semibold mb-6">Recent Receipts for this PO</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Receipt Number</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Received Date</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Received By</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items Received</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for receipt in recent_receipts %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4 text-sm font-medium text-gray-900">{{ receipt.receipt_number }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-500">{{ receipt.received_date|date:"M d, Y g:i A" }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-500">{{ receipt.received_by.get_full_name|default:receipt.received_by.username }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-500">{{ receipt.goodsreceiptitem_set.count }} items</td>
+                            <td class="px-4 py-4 text-sm text-gray-500">{{ receipt.notes|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-fill current date and time
+            const dateInput = document.getElementById('id_received_date');
+            if (!dateInput.value) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                dateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            // Add validation to ensure at least one item quantity is entered
+            const form = document.getElementById('receive-goods-form');
+            form.addEventListener('submit', function(e) {
+                const quantityInputs = document.querySelectorAll('input[name^="quantity_"]');
+                let hasQuantity = false;
+                
+                quantityInputs.forEach(input => {
+                    if (parseInt(input.value) > 0) {
+                        hasQuantity = true;
+                    }
+                });
+
+                if (!hasQuantity) {
+                    e.preventDefault();
+                    alert('Please enter at least one quantity to receive.');
+                    return false;
+                }
+            });
+        });
+    </script>
+        </div>
+    </div>
+</div>
+{% endblock %}

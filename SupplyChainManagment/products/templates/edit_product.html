@@ -8,16 +8,20 @@
     <div class="bg-white p-8 rounded-xl shadow w-full max-w-md">
       <h2 class="text-xl font-bold mb-6 text-center">Edit Product</h2>
       <form method="post" class="space-y-4">
-        {% csrf_token %} {% for field in form %}
+        {% csrf_token %} 
+        {% for field in form %}
         <div>
-          <label class="block mb-1 text-sm font-medium text-gray-700"
-            >{{ field.label }}{% if field.name == 'cost_price' %}
-            <span class="text-xs text-gray-400">(Cost Price per unit)</span>{%
-            endif %}{% if field.name == 'selling_price' %}
-            <span class="text-xs text-gray-400">(Selling Price per unit)</span
-            >{% endif %}</label
-          >
-          {{ field }} {% if field.errors %}
+          <label class="block mb-1 text-sm font-medium text-gray-700">
+            {{ field.label }}
+            {% if field.name == 'cost_price' %}
+            <span class="text-xs text-gray-400">(Cost Price per unit)</span>
+            {% endif %}
+            {% if field.name == 'selling_price' %}
+            <span class="text-xs text-gray-400">(Selling Price per unit)</span>
+            {% endif %}
+          </label>
+          {{ field }} 
+          {% if field.errors %}
           <p class="text-sm text-red-500">{{ field.errors.0 }}</p>
           {% endif %}
         </div>
