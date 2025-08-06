@@ -1,2 +1,2 @@
-# LogistixPro
+# Chain360
 SupplyChainManagmentSystem
