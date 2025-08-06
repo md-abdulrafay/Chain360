@@ -81,7 +81,7 @@ SupplyChainManagment/
 1. **Clone the repository**
    ```bash
    git clone https://github.com/md-abdulrafay/Chain360.git
-   cd LogistixPro
+   cd Chain360
    ```
 
 2. **Create and activate conda environment**
