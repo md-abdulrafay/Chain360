@@ -80,7 +80,7 @@ SupplyChainManagment/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/md-abdulrafay/LogistixPro.git
+   git clone https://github.com/md-abdulrafay/Chain360.git
    cd LogistixPro
    ```
 
