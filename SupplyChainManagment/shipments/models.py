@@ -3,11 +3,9 @@ from orders.models import Order
 
 class Shipment(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
         ('dispatched', 'Dispatched'),
         ('in_transit', 'In Transit'),
         ('delivered', 'Delivered'),
-        ('cancelled', 'Cancelled'),
     ]
 
     order = models.OneToOneField(Order, on_delete=models.CASCADE)

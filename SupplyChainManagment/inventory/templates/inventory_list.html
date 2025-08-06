@@ -15,10 +15,17 @@
     <tbody>
       {% for item in items %}
       <tr class="border-t">
-        <td class="px-4 py-2">{{ item.product }}</td>
-        <td class="px-4 py-2">{{ item.quantity }}</td>
-        <td class="px-4 py-2">{{ item.get_unit_display }}</td>
-        <td class="px-4 py-2">{{ item.location }}</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">{{ item.product.name }}</div>
+          <div class="text-sm text-gray-500">SKU: {{ item.product.sku }}</div>
+        </td>
+        <td class="px-4 py-2 font-semibold">{{ item.quantity }}</td>
+        <td class="px-4 py-2">
+          <span class="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+            {{ item.get_unit_display }}
+          </span>
+        </td>
+        <td class="px-4 py-2">{{ item.location|default:"-" }}</td>
         <td class="px-4 py-2">
           <a
             href="{% url 'inventory:edit' item.pk %}"

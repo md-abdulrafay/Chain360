@@ -81,6 +81,7 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ordered</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Type</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Received</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit Price</th>
@@ -96,6 +97,11 @@
                                     </td>
                                     <td class="px-4 py-4 text-sm text-gray-500">{{ item.product.sku }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-900">{{ item.quantity_ordered }}</td>
+                                    <td class="px-4 py-4 text-sm text-gray-900">
+                                        <span class="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                            {{ item.get_unit_type_display }}
+                                        </span>
+                                    </td>
                                     <td class="px-4 py-4 text-sm text-gray-900">{{ item.quantity_received }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-900">{{ item.quantity_pending }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-900">${{ item.unit_price|floatformat:2 }}</td>
@@ -112,7 +118,7 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="8" class="px-4 py-8 text-center text-gray-500">No items found</td>
+                                    <td colspan="9" class="px-4 py-8 text-center text-gray-500">No items found</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

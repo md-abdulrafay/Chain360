@@ -17,10 +17,11 @@ class PurchaseOrderForm(forms.ModelForm):
 class PurchaseOrderItemForm(forms.ModelForm):
     class Meta:
         model = PurchaseOrderItem
-        fields = ['product', 'quantity_ordered', 'unit_price']
+        fields = ['product', 'quantity_ordered', 'unit_type', 'unit_price']
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control'}),
             'quantity_ordered': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
+            'unit_type': forms.Select(attrs={'class': 'form-control'}),
             'unit_price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
         }
 
@@ -65,22 +66,35 @@ class GoodsReceiptItemForm(forms.ModelForm):
 class QuickPurchaseForm(forms.Form):
     supplier = forms.ModelChoiceField(
         queryset=Supplier.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500'})
     )
     product = forms.ModelChoiceField(
         queryset=Product.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500'})
     )
     quantity = forms.IntegerField(
         min_value=1,
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
+        widget=forms.NumberInput(attrs={'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500'})
+    )
+    unit_type = forms.ChoiceField(
+        choices=PurchaseOrderItem.UNIT_TYPE_CHOICES,
+        initial='piece',
+        widget=forms.Select(attrs={'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500'})
     )
     unit_price = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+        widget=forms.NumberInput(attrs={'class': 'w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500', 'step': '0.01'}),
+        label='Cost Price'
+    )
+    unit_selling_price = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={'class': 'w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500', 'step': '0.01'}),
+        label='Selling Price',
+        required=False
     )
     expected_delivery_date = forms.DateField(
         required=False,
-        widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        widget=forms.DateInput(attrs={'type': 'date', 'class': 'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500'})
     )

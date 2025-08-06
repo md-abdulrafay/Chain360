@@ -5,7 +5,30 @@
 
 
 {% block content %}
-<div class="bg-gray-100 min-h-screen">
+<div class="bg-gray-100 flex-1 p-6 md:mt-16">
+    <div class="container mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Create Purchase Order</h1>
+                <p class="text-gray-600 mt-2">Select supplier and products to purchase</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{% url 'purchases:invoice_list' %}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                    <i class="fas fa-file-invoice mr-2"></i> Invoices
+                </a>
+                <a href="{% url 'purchases:receipt_list' %}" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                    <i class="fas fa-truck mr-2"></i> Receipts
+                </a>
+                <a href="{% url 'purchases:quick_purchase' %}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                    <i class="fas fa-bolt mr-2"></i> Quick Purchase
+                </a>
+                <a href="{% url 'purchases:purchase_order_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                    <i class="fas fa-list mr-2"></i> All Purchase Orders
+                </a>
+            </div>
+        </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Auto-fill unit price when product quantity is entered
@@ -18,12 +41,8 @@
                     
                     if (parseInt(this.value) > 0 && !priceInput.value) {
                         // Auto-fill unit price from product data
-                        fetch(`/purchases/api/product-price/?product_id=${productId}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                priceInput.value = data.price;
-                                updateTotal(row);
-                            });
+                        const unitSelector = row.querySelector('select[name="unit_type_' + productId + '"]');
+                        updatePricesForUnit(productId, unitSelector.value);
                     } else {
                         updateTotal(row);
                     }
@@ -36,6 +55,44 @@
                     updateTotal(this.closest('tr'));
                 });
             });
+
+            // Handle unit type changes
+            document.querySelectorAll('.unit-selector').forEach(function(select) {
+                select.addEventListener('change', function() {
+                    const productId = this.dataset.productId;
+                    const selectedUnit = this.value;
+                    updatePricesForUnit(productId, selectedUnit);
+                });
+            });
+
+            function updatePricesForUnit(productId, unitType) {
+                // Fetch updated prices for the selected unit
+                fetch(`/purchases/api/product-price/?product_id=${productId}&unit_type=${unitType}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const row = document.querySelector(`select[data-product-id="${productId}"]`).closest('tr');
+                        const costInput = row.querySelector(`input[name="unit_price_${productId}"]`);
+                        const sellingInput = row.querySelector(`input[name="selling_price_${productId}"]`);
+                        
+                        // Update cost price
+                        if (data.cost_price) {
+                            costInput.value = data.cost_price;
+                        }
+                        
+                        // Update selling price input (user can still modify it)
+                        if (data.selling_price) {
+                            sellingInput.value = data.selling_price;
+                        }
+                        
+                        // Update total
+                        updateTotal(row);
+                    })
+                    .catch(error => {
+                        console.log('Using default prices for unit type:', unitType);
+                        // Fallback to default calculation if API fails
+                        updateTotal(document.querySelector(`select[data-product-id="${productId}"]`).closest('tr'));
+                    });
+            }
 
             function updateTotal(row) {
                 const qtyInput = row.querySelector('input[name^="quantity_"]');
@@ -60,11 +117,11 @@
             }
         });
     </script>
-    <div class="container mx-auto p-8">
+        
         <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             <div class="bg-blue-600 text-white p-6">
-                <h1 class="text-2xl font-bold">Create Purchase Order</h1>
-                <p class="text-blue-100">Select supplier and products to purchase</p>
+                <h2 class="text-xl font-bold">Purchase Order Details</h2>
+                <p class="text-blue-100">Complete the form below to create your purchase order</p>
             </div>
             
             <div class="p-6">
@@ -112,10 +169,11 @@
                                     <tr class="bg-gray-100">
                                         <th class="px-4 py-3 text-left font-medium text-gray-700">Product</th>
                                         <th class="px-4 py-3 text-left font-medium text-gray-700">SKU</th>
-                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Unit</th>
                                         <th class="px-4 py-3 text-left font-medium text-gray-700">Current Inventory</th>
                                         <th class="px-4 py-3 text-left font-medium text-gray-700">Quantity</th>
-                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Unit Price</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Unit Type</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Cost Price</th>
+                                        <th class="px-4 py-3 text-left font-medium text-gray-700">Selling Price</th>
                                         <th class="px-4 py-3 text-left font-medium text-gray-700">Total</th>
                                     </tr>
                                 </thead>
@@ -130,11 +188,6 @@
                                         </td>
                                         <td class="px-4 py-3 text-sm text-gray-600">{{ product.sku }}</td>
                                         <td class="px-4 py-3">
-                                            <span class="text-sm text-gray-600 font-medium">
-                                                {{ inventory_units|get_item:product.id|default:"pcs" }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3">
                                             <span class="text-sm text-blue-600 font-medium">
                                                 {{ inventory|get_item:product.id|default:"0" }} {{ inventory_units|get_item:product.id|default:"pcs" }}
                                             </span>
@@ -148,6 +201,24 @@
                                                    placeholder="0">
                                         </td>
                                         <td class="px-4 py-3">
+                                            <select name="unit_type_{{ product.id }}" class="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500 text-sm unit-selector" data-product-id="{{ product.id }}">
+                                                <option value="piece">Piece</option>
+                                                <option value="box">Box</option>
+                                                <option value="case">Case</option>
+                                                <option value="pallet">Pallet</option>
+                                                <option value="kg">Kilogram</option>
+                                                <option value="gram">Gram</option>
+                                                <option value="liter">Liter</option>
+                                                <option value="ml">Milliliter</option>
+                                                <option value="meter">Meter</option>
+                                                <option value="cm">Centimeter</option>
+                                                <option value="pack">Pack</option>
+                                                <option value="set">Set</option>
+                                                <option value="unit">Unit</option>
+                                                <option value="dozen">Dozen</option>
+                                            </select>
+                                        </td>
+                                        <td class="px-4 py-3">
                                             <div class="flex">
                                                 <span class="px-2 py-1 text-sm text-gray-500">$</span>
                                                 <input type="number" 
@@ -156,6 +227,19 @@
                                                        min="0" 
                                                        value="{{ product.cost_price|default:product.cost_price }}"
                                                        class="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-blue-500" 
+                                                       placeholder="0.00">
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex">
+                                                <span class="px-2 py-1 text-sm text-gray-500">$</span>
+                                                <input type="number" 
+                                                       name="selling_price_{{ product.id }}" 
+                                                       step="0.01" 
+                                                       min="0" 
+                                                       value="{{ product.selling_price|default:product.selling_price }}"
+                                                       class="w-24 px-2 py-1 border rounded focus:ring-2 focus:ring-green-500 selling-price-input" 
+                                                       data-product-id="{{ product.id }}"
                                                        placeholder="0.00">
                                             </div>
                                         </td>

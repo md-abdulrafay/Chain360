@@ -53,11 +53,30 @@ class PurchaseOrderItem(models.Model):
     """
     Individual items in a purchase order
     """
+    UNIT_TYPE_CHOICES = [
+        ('piece', 'Piece'),
+        ('box', 'Box'),
+        ('case', 'Case'),
+        ('pallet', 'Pallet'),
+        ('kg', 'Kilogram'),
+        ('gram', 'Gram'),
+        ('liter', 'Liter'),
+        ('ml', 'Milliliter'),
+        ('meter', 'Meter'),
+        ('cm', 'Centimeter'),
+        ('pack', 'Pack'),
+        ('set', 'Set'),
+        ('unit', 'Unit'),
+        ('dozen', 'Dozen'),
+    ]
+    
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity_ordered = models.PositiveIntegerField()
     quantity_received = models.PositiveIntegerField(default=0)
+    unit_type = models.CharField(max_length=20, choices=UNIT_TYPE_CHOICES, default='piece')
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
+    unit_selling_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     total_price = models.DecimalField(max_digits=12, decimal_places=2)
 
     def save(self, *args, **kwargs):
@@ -75,7 +94,7 @@ class PurchaseOrderItem(models.Model):
         return self.quantity_received >= self.quantity_ordered
 
     def __str__(self):
-        return f"{self.product.name} - {self.quantity_ordered} units"
+        return f"{self.product.name} - {self.quantity_ordered} {self.get_unit_type_display()}"
 
 
 class PurchaseInvoice(models.Model):
@@ -156,15 +175,26 @@ class GoodsReceiptItem(models.Model):
         # Update inventory
         from inventory.models import InventoryItem
         try:
-            inventory_item = InventoryItem.objects.get(product=self.purchase_order_item.product)
+            # Look for existing inventory item with same product AND unit type
+            inventory_item = InventoryItem.objects.get(
+                product=self.purchase_order_item.product,
+                unit=self.purchase_order_item.unit_type
+            )
             inventory_item.quantity += self.quantity_received
+            # Update unit-specific prices if provided in purchase order
+            if self.purchase_order_item.unit_price:
+                inventory_item.unit_cost_price = self.purchase_order_item.unit_price
+            if self.purchase_order_item.unit_selling_price:
+                inventory_item.unit_selling_price = self.purchase_order_item.unit_selling_price
             inventory_item.save()
         except InventoryItem.DoesNotExist:
-            # Create new inventory item if it doesn't exist
+            # Create new inventory item if it doesn't exist, using the same unit type as purchased
             InventoryItem.objects.create(
                 product=self.purchase_order_item.product,
                 quantity=self.quantity_received,
-                unit='pcs',  # Default unit, you might want to make this configurable
+                unit=self.purchase_order_item.unit_type,  # Use the unit type from purchase order
+                unit_cost_price=self.purchase_order_item.unit_price,
+                unit_selling_price=self.purchase_order_item.unit_selling_price,
                 description=f"Added from Purchase Order {self.goods_receipt.purchase_order.po_number}"
             )
 

@@ -124,6 +124,8 @@ def create_purchase_order(request):
         for product in products:
             qty = int(request.POST.get(f'quantity_{product.id}', 0))
             unit_price = float(request.POST.get(f'unit_price_{product.id}', 0))
+            selling_price = float(request.POST.get(f'selling_price_{product.id}', 0))
+            unit_type = request.POST.get(f'unit_type_{product.id}', 'piece')
             
             if qty > 0 and unit_price > 0:
                 # Create purchase order item
@@ -131,7 +133,9 @@ def create_purchase_order(request):
                     purchase_order=po,
                     product=product,
                     quantity_ordered=qty,
-                    unit_price=unit_price
+                    unit_type=unit_type,
+                    unit_price=unit_price,
+                    unit_selling_price=selling_price if selling_price > 0 else None
                 )
                 total_amount += po_item.total_price
                 items_added += 1
@@ -175,12 +179,15 @@ def quick_purchase(request):
                 status='draft'
             )
             
-            # Create PO Item
+            # Create PO Item with selling price
+            selling_price = form.cleaned_data.get('unit_selling_price')
             PurchaseOrderItem.objects.create(
                 purchase_order=po,
                 product=form.cleaned_data['product'],
                 quantity_ordered=form.cleaned_data['quantity'],
-                unit_price=form.cleaned_data['unit_price']
+                unit_type=form.cleaned_data['unit_type'],
+                unit_price=form.cleaned_data['unit_price'],
+                unit_selling_price=selling_price if selling_price else None
             )
             
             po.calculate_total()
@@ -489,18 +496,69 @@ def goods_receipt_detail(request, pk):
 # API views for AJAX requests
 @login_required
 def get_product_price(request):
-    """Get product price for AJAX requests - returns cost price for purchase orders"""
+    """Get product price for AJAX requests - returns cost and selling prices for different units"""
     product_id = request.GET.get('product_id')
+    unit_type = request.GET.get('unit_type', 'piece')  # Default to piece
+    
     if product_id:
         try:
             product = Product.objects.get(id=product_id)
-            # For purchase orders, use cost_price (what we pay to suppliers)
-            # If cost_price is not set, fall back to the legacy price field
-            price = product.cost_price
-            return JsonResponse({'price': str(price)})
+            
+            # First try to get unit-specific prices from inventory
+            try:
+                from inventory.models import InventoryItem
+                inventory_item = InventoryItem.objects.get(product=product, unit=unit_type)
+                
+                # Use inventory-specific prices if available
+                unit_cost_price = inventory_item.cost_price
+                unit_selling_price = inventory_item.selling_price
+                
+                return JsonResponse({
+                    'cost_price': f"{unit_cost_price:.2f}",
+                    'selling_price': f"{unit_selling_price:.2f}",
+                    'unit_type': unit_type,
+                    'source': 'inventory'
+                })
+            except InventoryItem.DoesNotExist:
+                # Fallback to calculated prices based on product base prices
+                base_cost_price = product.cost_price
+                base_selling_price = product.selling_price
+                
+                # Unit conversion multipliers
+                unit_multipliers = {
+                    'piece': 1,
+                    'box': 10,      # 1 box = 10 pieces
+                    'case': 50,     # 1 case = 50 pieces  
+                    'pallet': 1000, # 1 pallet = 1000 pieces
+                    'dozen': 12,    # 1 dozen = 12 pieces
+                    'pack': 5,      # 1 pack = 5 pieces
+                    'set': 3,       # 1 set = 3 pieces
+                    'kg': 1,        # For weight-based products
+                    'gram': 0.001,  # 1 gram = 0.001 kg
+                    'liter': 1,     # For volume-based products
+                    'ml': 0.001,    # 1 ml = 0.001 liter
+                    'meter': 1,     # For length-based products
+                    'cm': 0.01,     # 1 cm = 0.01 meter
+                    'unit': 1,      # Generic unit
+                }
+                
+                # Get multiplier for the selected unit
+                multiplier = unit_multipliers.get(unit_type, 1)
+                
+                # Calculate prices for the selected unit
+                unit_cost_price = base_cost_price * multiplier
+                unit_selling_price = base_selling_price * multiplier
+                
+                return JsonResponse({
+                    'cost_price': f"{unit_cost_price:.2f}",
+                    'selling_price': f"{unit_selling_price:.2f}",
+                    'unit_type': unit_type,
+                    'multiplier': multiplier,
+                    'source': 'calculated'
+                })
         except Product.DoesNotExist:
             pass
-    return JsonResponse({'price': '0.00'})
+    return JsonResponse({'cost_price': '0.00', 'selling_price': '0.00'})
 
 @supplier_required
 def supplier_dashboard(request):
